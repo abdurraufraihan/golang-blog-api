@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/abdurraufraihan/golang-blog-api/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -11,6 +12,7 @@ func ConnectWithDB() *gorm.DB {
 	if err != nil {
 		panic("Failed to create connection with database")
 	}
+	db.AutoMigrate(&model.Post{}, &model.Category{})
 	return db
 }
 
