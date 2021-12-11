@@ -10,6 +10,7 @@ import (
 type PostService interface {
 	Insert(postDto dto.Post) model.Post
 	All() []model.Post
+	FindById(postId uint64) model.Post
 }
 
 type postService struct {
@@ -22,7 +23,7 @@ func NewPostService(postRepo repository.PostRepo) *postService {
 	}
 }
 
-func (service postService) Insert(postDto dto.Post) model.Post {
+func (service *postService) Insert(postDto dto.Post) model.Post {
 	postModel := model.Post{}
 	err := smapping.FillStruct(&postModel, smapping.MapFields(&postDto))
 	if err != nil {
@@ -32,6 +33,10 @@ func (service postService) Insert(postDto dto.Post) model.Post {
 	return res
 }
 
-func (service postService) All() []model.Post {
+func (service *postService) All() []model.Post {
 	return service.postRepo.AllPost()
+}
+
+func (service *postService) FindById(postId uint64) model.Post {
+	return service.postRepo.FindByPostId(postId)
 }

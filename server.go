@@ -25,6 +25,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"hello": "world"})
 	})
 	router.GET("/posts", postController.All)
+	router.GET("/posts/:id", postController.FindById)
 	router.POST("/posts", postController.Insert)
 	router.Run()
 }
