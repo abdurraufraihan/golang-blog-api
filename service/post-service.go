@@ -9,6 +9,7 @@ import (
 
 type PostService interface {
 	Insert(postDto dto.Post) model.Post
+	All() []model.Post
 }
 
 type postService struct {
@@ -29,4 +30,8 @@ func (service postService) Insert(postDto dto.Post) model.Post {
 	}
 	res := service.postRepo.Insert(postModel)
 	return res
+}
+
+func (service postService) All() []model.Post {
+	return service.postRepo.AllPost()
 }

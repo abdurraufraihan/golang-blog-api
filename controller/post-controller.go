@@ -10,6 +10,7 @@ import (
 
 type PostController interface {
 	Insert(context *gin.Context)
+	All(context *gin.Context)
 }
 
 type postController struct {
@@ -30,4 +31,9 @@ func (controller postController) Insert(context *gin.Context) {
 	}
 	result := controller.postService.Insert(postDto)
 	context.JSON(http.StatusCreated, result)
+}
+
+func (controller postController) All(context *gin.Context) {
+	posts := controller.postService.All()
+	context.JSON(http.StatusOK, posts)
 }

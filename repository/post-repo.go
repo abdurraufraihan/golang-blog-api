@@ -7,6 +7,7 @@ import (
 
 type PostRepo interface {
 	Insert(post model.Post) model.Post
+	AllPost() []model.Post
 }
 
 type postRepo struct {
@@ -20,4 +21,10 @@ func NewPostRepo(db *gorm.DB) *postRepo {
 func (p postRepo) Insert(post model.Post) model.Post {
 	p.db.Create(&post)
 	return post
+}
+
+func (p postRepo) AllPost() []model.Post {
+	var posts []model.Post
+	p.db.Preload("Post").Find(&posts)
+	return posts
 }
