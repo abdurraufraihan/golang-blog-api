@@ -7,12 +7,12 @@ import (
 )
 
 func ConnectWithDB() *gorm.DB {
-	dns := "host=localhost user=postgres password=123456 dbname=goblog port=5432 sslmode=disable TimeZone=Asia/Dhaka"
+	dns := "host=localhost user=postgres password=123456 dbname=goblog port=5432 sslmode=disable TimeZone=UTC"
 	db, err := gorm.Open(postgres.Open(dns), &gorm.Config{})
 	if err != nil {
 		panic("Failed to create connection with database")
 	}
-	db.AutoMigrate(&model.Post{}, &model.Category{})
+	db.AutoMigrate(&model.Category{}, &model.Post{})
 	return db
 }
 

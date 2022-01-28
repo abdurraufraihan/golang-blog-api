@@ -27,5 +27,5 @@ func main() {
 	router.GET("/posts", postController.All)
 	router.GET("/posts/:id", postController.FindById)
 	router.POST("/posts", postController.Insert)
-	router.Run()
+	router.Run("localhost:8080")
 }

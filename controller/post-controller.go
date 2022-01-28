@@ -49,6 +49,7 @@ func (controller *postController) FindById(context *gin.Context) {
 	var post model.Post = controller.postService.FindById(postId)
 	if (post == model.Post{}) {
 		context.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
+	} else {
+		context.JSON(http.StatusOK, post)
 	}
-	context.JSON(http.StatusOK, post)
 }
