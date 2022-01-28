@@ -26,12 +26,12 @@ func (repo *postRepo) Insert(post model.Post) model.Post {
 
 func (repo *postRepo) AllPost() []model.Post {
 	var posts []model.Post
-	repo.db.Preload("Post").Find(&posts)
+	repo.db.Find(&posts)
 	return posts
 }
 
 func (repo *postRepo) FindByPostId(postId uint64) model.Post {
 	var post model.Post
-	repo.db.Preload("Post").Find(&post, postId)
+	repo.db.Find(&post, postId)
 	return post
 }

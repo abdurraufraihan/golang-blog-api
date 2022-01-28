@@ -16,6 +16,10 @@ var (
 	postRepository repository.PostRepo       = repository.NewPostRepo(db)
 	postService    service.PostService       = service.NewPostService(postRepository)
 	postController controller.PostController = controller.NewPostController(postService)
+
+	categoryRepository repository.CategoryRepo       = repository.NewCategoryRepo(db)
+	categoryService    service.CategoryService       = service.NewCategoryService(categoryRepository)
+	categoryController controller.CategoryController = controller.NewCategoryController(categoryService)
 )
 
 func main() {
@@ -27,5 +31,8 @@ func main() {
 	router.GET("/posts", postController.All)
 	router.GET("/posts/:id", postController.FindById)
 	router.POST("/posts", postController.Insert)
+
+	router.GET("/categories", categoryController.All)
+
 	router.Run("localhost:8080")
 }
