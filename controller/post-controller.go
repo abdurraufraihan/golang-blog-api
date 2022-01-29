@@ -31,6 +31,7 @@ func (controller *postController) Insert(context *gin.Context) {
 	err := context.ShouldBindJSON(&postDto)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 	result := controller.postService.Insert(postDto)
 	context.JSON(http.StatusCreated, result)
@@ -45,11 +46,12 @@ func (controller *postController) FindById(context *gin.Context) {
 	postId, err := strconv.ParseUint(context.Param("id"), 0, 0)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "No param id was found"})
+		return
 	}
 	var post model.Post = controller.postService.FindById(postId)
 	if (post == model.Post{}) {
 		context.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
-	} else {
-		context.JSON(http.StatusOK, post)
+		return
 	}
+	context.JSON(http.StatusOK, post)
 }
