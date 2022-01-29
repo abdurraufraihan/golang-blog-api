@@ -12,7 +12,7 @@ func ConnectWithDB() *gorm.DB {
 	if err != nil {
 		panic("Failed to create connection with database")
 	}
-	db.AutoMigrate(&model.Category{}, &model.Post{})
+	db.AutoMigrate(&model.User{}, &model.Category{}, &model.Post{})
 	return db
 }
 
