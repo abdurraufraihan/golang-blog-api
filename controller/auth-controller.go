@@ -22,7 +22,6 @@ func NewAuthController(authService service.AuthService) *authController {
 
 func (controller *authController) Register(context *gin.Context) {
 	var userDto dto.User
-	// userDto := dto.User{}
 	err := context.ShouldBindJSON(&userDto)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

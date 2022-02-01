@@ -1,8 +1,6 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/abdurraufraihan/golang-blog-api/config"
 	"github.com/abdurraufraihan/golang-blog-api/controller"
 	"github.com/abdurraufraihan/golang-blog-api/repository"
@@ -29,16 +27,14 @@ var (
 func main() {
 	defer config.CloseDbConnection(db)
 	router := gin.Default()
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"hello": "world"})
-	})
+
 	router.GET("/posts", postController.All)
 	router.GET("/posts/:id", postController.FindById)
 	router.POST("/posts", postController.Insert)
 
 	router.GET("/categories", categoryController.All)
 
-	router.POST("/users", authController.Register)
+	router.POST("/signup", authController.Register)
 
 	router.Run("localhost:8080")
 }
