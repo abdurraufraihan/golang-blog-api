@@ -19,9 +19,10 @@ var (
 	categoryService    service.CategoryService       = service.NewCategoryService(categoryRepository)
 	categoryController controller.CategoryController = controller.NewCategoryController(categoryService)
 
+	jwtService     service.JwtService        = service.NewJwtService()
 	authRepository repository.AuthRepo       = repository.NewAuthRepo(db)
 	authService    service.AuthService       = service.NewAuthService(authRepository)
-	authController controller.AuthController = controller.NewAuthController(authService)
+	authController controller.AuthController = controller.NewAuthController(authService, jwtService)
 )
 
 func main() {
@@ -35,6 +36,7 @@ func main() {
 	router.GET("/categories", categoryController.All)
 
 	router.POST("/signup", authController.Register)
+	router.POST("/login", authController.Login)
 
 	router.Run("localhost:8080")
 }

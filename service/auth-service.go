@@ -5,11 +5,13 @@ import (
 	"github.com/abdurraufraihan/golang-blog-api/model"
 	"github.com/abdurraufraihan/golang-blog-api/repository"
 	"github.com/mashingan/smapping"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 type AuthService interface {
 	Register(userDto dto.User) (*gorm.DB, model.User)
+	VerifyCredential(email string, passsword string) (bool, uint64)
 }
 
 type authService struct {
@@ -27,4 +29,20 @@ func (service *authService) Register(userDto dto.User) (*gorm.DB, model.User) {
 		panic(err)
 	}
 	return service.authRepo.Register(userModel)
+}
+
+func (service *authService) VerifyCredential(email string, passsword string) (bool, uint64) {
+	user := service.authRepo.FindByEmail(email)
+	if (user != model.User{}) {
+		return comparePassword([]byte(user.Password), []byte(passsword)), user.ID
+	}
+	return false, 0
+}
+
+func comparePassword(hashedPass []byte, plainPass []byte) bool {
+	err := bcrypt.CompareHashAndPassword(hashedPass, plainPass)
+	if err != nil {
+		return false
+	}
+	return true
 }
