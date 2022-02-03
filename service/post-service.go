@@ -10,7 +10,7 @@ import (
 type PostService interface {
 	Insert(postDto dto.Post) model.Post
 	All() []model.Post
-	FindById(postId uint64) model.Post
+	FindById(postId uint64) (model.Post, error)
 }
 
 type postService struct {
@@ -37,6 +37,6 @@ func (service *postService) All() []model.Post {
 	return service.postRepo.AllPost()
 }
 
-func (service *postService) FindById(postId uint64) model.Post {
+func (service *postService) FindById(postId uint64) (model.Post, error) {
 	return service.postRepo.FindByPostId(postId)
 }

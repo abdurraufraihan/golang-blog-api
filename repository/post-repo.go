@@ -8,7 +8,7 @@ import (
 type PostRepo interface {
 	Insert(post model.Post) model.Post
 	AllPost() []model.Post
-	FindByPostId(postId uint64) model.Post
+	FindByPostId(postId uint64) (model.Post, error)
 }
 
 type postRepo struct {
@@ -26,12 +26,15 @@ func (repo *postRepo) Insert(post model.Post) model.Post {
 
 func (repo *postRepo) AllPost() []model.Post {
 	var posts []model.Post
-	repo.db.Find(&posts)
+	repo.db.Preload("Category").Find(&posts)
 	return posts
 }
 
-func (repo *postRepo) FindByPostId(postId uint64) model.Post {
+func (repo *postRepo) FindByPostId(postId uint64) (model.Post, error) {
 	var post model.Post
-	repo.db.Find(&post, postId)
-	return post
+	result := repo.db.First(&post, postId)
+	if result.Error != nil {
+		return post, result.Error
+	}
+	return post, nil
 }
