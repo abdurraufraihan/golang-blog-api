@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/abdurraufraihan/golang-blog-api/dto"
+	"github.com/abdurraufraihan/golang-blog-api/serializer"
 	"github.com/abdurraufraihan/golang-blog-api/service"
 	"github.com/gin-gonic/gin"
 )
@@ -38,7 +39,8 @@ func (controller *postController) Insert(context *gin.Context) {
 
 func (controller *postController) All(context *gin.Context) {
 	posts := controller.postService.All()
-	context.JSON(http.StatusOK, posts)
+	serializer := serializer.PostsSerializer{Posts: posts}
+	context.JSON(http.StatusOK, serializer.Response())
 }
 
 func (controller *postController) FindById(context *gin.Context) {
@@ -52,5 +54,6 @@ func (controller *postController) FindById(context *gin.Context) {
 		context.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
 		return
 	}
-	context.JSON(http.StatusOK, post)
+	serializer := serializer.PostSerializer{Post: post}
+	context.JSON(http.StatusOK, serializer.Response())
 }

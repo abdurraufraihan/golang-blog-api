@@ -32,7 +32,7 @@ func (repo *postRepo) AllPost() []model.Post {
 
 func (repo *postRepo) FindByPostId(postId uint64) (model.Post, error) {
 	var post model.Post
-	result := repo.db.First(&post, postId)
+	result := repo.db.Preload("Category").First(&post, postId)
 	if result.Error != nil {
 		return post, result.Error
 	}
