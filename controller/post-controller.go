@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"path/filepath"
 	"strconv"
 
 	"github.com/abdurraufraihan/golang-blog-api/dto"
@@ -27,14 +28,21 @@ func NewPostController(postService service.PostService) *postController {
 }
 
 func (controller *postController) Insert(context *gin.Context) {
-	postDto := dto.Post{}
-	err := context.ShouldBindJSON(&postDto)
-	if err != nil {
+	form := dto.Post{}
+	if err := context.ShouldBind(&form); err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-	result := controller.postService.Insert(postDto)
-	context.JSON(http.StatusCreated, result)
+	file, _ := context.FormFile("image")
+	fileName := filepath.Base(file.Filename)
+	if err := context.SaveUploadedFile(file, "media/images/"+fileName); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	form.Image = "media/images/" + fileName
+	post := controller.postService.Insert(form)
+	serializer := serializer.PostSerializer{Post: post}
+	context.JSON(http.StatusCreated, serializer.Response())
 }
 
 func (controller *postController) All(context *gin.Context) {

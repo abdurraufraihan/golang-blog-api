@@ -6,6 +6,7 @@ type PostResponse struct {
 	ID          uint             `json:"id"`
 	Title       string           `json:"title"`
 	Description string           `json:"description"`
+	Image       string           `json:"image"`
 	Category    CategoryResponse `json:"category"`
 }
 
@@ -19,6 +20,7 @@ func (serializer *PostSerializer) Response() PostResponse {
 		ID:          serializer.Post.ID,
 		Title:       serializer.Post.Title,
 		Description: serializer.Post.Description,
+		Image:       serializer.Post.Image,
 		Category:    categorySerializer.Response(),
 	}
 }

@@ -21,6 +21,7 @@ func NewPostRepo(db *gorm.DB) *postRepo {
 
 func (repo *postRepo) Insert(post model.Post) model.Post {
 	repo.db.Create(&post)
+	repo.db.Preload("Category").First(&post, post.ID)
 	return post
 }
 
