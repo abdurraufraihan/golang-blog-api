@@ -12,7 +12,7 @@ type JwtService interface {
 }
 
 type jwtCustomClaim struct {
-	userId uint64 `json:"user_id"`
+	UserId uint64 `json:"user_id"`
 	jwt.StandardClaims
 }
 

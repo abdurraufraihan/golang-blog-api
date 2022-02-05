@@ -10,4 +10,5 @@ type Post struct {
 	Description string   `gorm:"type:text" json:"description"`
 	CategoryID  uint     `json:"category"`
 	Category    Category `gorm:"foreignkey:CategoryID" json:"-"`
+	Image       string   `gorm:"type:varchar(255)" json:"image"`
 }
