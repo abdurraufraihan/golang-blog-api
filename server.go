@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/abdurraufraihan/golang-blog-api/config"
 	"github.com/abdurraufraihan/golang-blog-api/controller"
+	"github.com/abdurraufraihan/golang-blog-api/middleware"
 	"github.com/abdurraufraihan/golang-blog-api/repository"
 	"github.com/abdurraufraihan/golang-blog-api/service"
 	"github.com/gin-gonic/gin"
@@ -31,7 +32,7 @@ func main() {
 
 	router.GET("/posts", postController.All)
 	router.GET("/posts/:id", postController.FindById)
-	router.POST("/posts", postController.Insert)
+	router.POST("/posts", middleware.AuthorizeJWT(jwtService), postController.Insert)
 
 	router.GET("/categories", categoryController.All)
 
