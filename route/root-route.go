@@ -6,6 +6,7 @@ import (
 )
 
 func RootRoute(db *gorm.DB, router *gin.Engine) {
+	router.Static("/media", "./media")
 	apiRouter := router.Group("/api/v1")
 	postRouter := apiRouter.Group("/posts")
 	PostRoute(db, postRouter)

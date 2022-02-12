@@ -25,7 +25,6 @@ func NewAuthController(
 }
 
 func (controller *authController) Login(context *gin.Context) {
-	// loginDto := dto.Login{}
 	var loginDto dto.Login
 	err := context.ShouldBindJSON(&loginDto)
 	if err != nil {
