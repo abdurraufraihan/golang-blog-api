@@ -19,6 +19,6 @@ func NewCategoryRepo(db *gorm.DB) *categoryRepo {
 
 func (repo *categoryRepo) AllCategories() []model.Category {
 	category := []model.Category{}
-	repo.db.Preload("Post").Find(&category)
+	repo.db.Find(&category)
 	return category
 }
