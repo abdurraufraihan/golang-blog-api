@@ -33,13 +33,15 @@ func (controller *postController) Insert(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-	file, _ := context.FormFile("image")
-	fileName := filepath.Base(file.Filename)
-	if err := context.SaveUploadedFile(file, "media/images/"+fileName); err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
-		return
+	if form.Image != "" {
+		file, _ := context.FormFile("image")
+		fileName := filepath.Base(file.Filename)
+		if err := context.SaveUploadedFile(file, "media/images/"+fileName); err != nil {
+			context.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+		form.Image = "media/images/" + fileName
 	}
-	form.Image = "media/images/" + fileName
 	post := controller.postService.Insert(form)
 	serializer := serializer.PostSerializer{Post: post}
 	context.JSON(http.StatusCreated, serializer.Response())
