@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 
+	"github.com/abdurraufraihan/golang-blog-api/serializer"
 	"github.com/abdurraufraihan/golang-blog-api/service"
 	"github.com/gin-gonic/gin"
 )
@@ -23,5 +24,6 @@ func NewCategoryController(
 
 func (controller *categoryController) All(context *gin.Context) {
 	categories := controller.categoryService.All()
-	context.JSON(http.StatusOK, categories)
+	serializer := serializer.CategoriesSerializer{Categories: categories}
+	context.JSON(http.StatusOK, serializer.Response())
 }

@@ -40,8 +40,8 @@ type PostsSerializer struct {
 func (serializer *PostsSerializer) Response() []PostResponse {
 	response := []PostResponse{}
 	for _, post := range serializer.Posts {
-		serializer := PostSerializer{Post: post}
-		response = append(response, serializer.Response())
+		postSerializer := PostSerializer{Post: post}
+		response = append(response, postSerializer.Response())
 	}
 	return response
 }
