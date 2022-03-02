@@ -15,4 +15,5 @@ func CategoryRoute(db *gorm.DB, categoryRouter *gin.RouterGroup) {
 		categoryController controller.CategoryController = controller.NewCategoryController(categoryService)
 	)
 	categoryRouter.GET("", categoryController.All)
+	categoryRouter.POST("", categoryController.Insert)
 }

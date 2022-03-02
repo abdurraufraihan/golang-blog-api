@@ -7,6 +7,7 @@ import (
 
 type CategoryRepo interface {
 	AllCategories() []model.Category
+	Insert(category model.Category) model.Category
 }
 
 type categoryRepo struct {
@@ -20,5 +21,10 @@ func NewCategoryRepo(db *gorm.DB) *categoryRepo {
 func (repo *categoryRepo) AllCategories() []model.Category {
 	category := []model.Category{}
 	repo.db.Find(&category)
+	return category
+}
+
+func (repo *categoryRepo) Insert(category model.Category) model.Category {
+	repo.db.Create(&category)
 	return category
 }
