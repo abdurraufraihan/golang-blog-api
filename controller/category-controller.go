@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/abdurraufraihan/golang-blog-api/dto"
 	"github.com/abdurraufraihan/golang-blog-api/serializer"
@@ -12,6 +13,7 @@ import (
 type CategoryController interface {
 	All(context *gin.Context)
 	Insert(context *gin.Context)
+	Update(context *gin.Context)
 }
 
 type categoryController struct {
@@ -38,6 +40,23 @@ func (controller *categoryController) Insert(context *gin.Context) {
 		return
 	}
 	category := controller.categoryService.Insert(categoryDto)
+	serializer := serializer.CategorySerializer{Category: category}
+	context.JSON(http.StatusOK, serializer.Response())
+}
+
+func (controller *categoryController) Update(context *gin.Context) {
+	categoryDto := dto.Category{}
+	err := context.ShouldBindJSON(&categoryDto)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	categoryId, _ := strconv.ParseUint(context.Param("categoryId"), 10, 64)
+	category, err := controller.categoryService.Update(categoryId, categoryDto)
+	if err != nil {
+		context.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
 	serializer := serializer.CategorySerializer{Category: category}
 	context.JSON(http.StatusOK, serializer.Response())
 }

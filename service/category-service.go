@@ -10,6 +10,7 @@ import (
 type CategoryService interface {
 	All() []model.Category
 	Insert(categoryDto dto.Category) model.Category
+	Update(categoryId uint64, categoryDto dto.Category) (model.Category, error)
 }
 
 type categoryService struct {
@@ -31,4 +32,19 @@ func (service *categoryService) Insert(categoryDto dto.Category) model.Category 
 		panic(err)
 	}
 	return service.categoryRepo.Insert(categoryModel)
+}
+
+func (service *categoryService) Update(
+	categoryId uint64, categoryDto dto.Category,
+) (model.Category, error) {
+	category, err := service.categoryRepo.GetById(categoryId)
+	if err != nil {
+		return category, err
+	}
+	validationErr := smapping.FillStruct(&category, smapping.MapFields(&categoryDto))
+	if validationErr != nil {
+		panic(validationErr)
+	}
+	service.categoryRepo.Save(&category)
+	return category, nil
 }
