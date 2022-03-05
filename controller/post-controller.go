@@ -12,9 +12,10 @@ import (
 )
 
 type PostController interface {
-	Insert(context *gin.Context)
 	All(context *gin.Context)
 	FindById(context *gin.Context)
+	Insert(context *gin.Context)
+	Update(context *gin.Context)
 }
 
 type postController struct {
@@ -27,26 +28,6 @@ func NewPostController(postService service.PostService) *postController {
 	}
 }
 
-func (controller *postController) Insert(context *gin.Context) {
-	form := dto.Post{}
-	if err := context.ShouldBind(&form); err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-	if form.Image != "" {
-		file, _ := context.FormFile("image")
-		fileName := filepath.Base(file.Filename)
-		if err := context.SaveUploadedFile(file, "media/images/"+fileName); err != nil {
-			context.JSON(http.StatusBadRequest, err.Error())
-			return
-		}
-		form.Image = "media/images/" + fileName
-	}
-	post := controller.postService.Insert(form)
-	serializer := serializer.PostSerializer{Post: post}
-	context.JSON(http.StatusCreated, serializer.Response())
-}
-
 func (controller *postController) All(context *gin.Context) {
 	posts := controller.postService.All()
 	serializer := serializer.PostsSerializer{Posts: posts}
@@ -54,7 +35,7 @@ func (controller *postController) All(context *gin.Context) {
 }
 
 func (controller *postController) FindById(context *gin.Context) {
-	postId, err := strconv.ParseUint(context.Param("id"), 0, 0)
+	postId, err := strconv.ParseUint(context.Param("postId"), 10, 64)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "No param id was found"})
 		return
@@ -66,4 +47,51 @@ func (controller *postController) FindById(context *gin.Context) {
 	}
 	serializer := serializer.PostSerializer{Post: post}
 	context.JSON(http.StatusOK, serializer.Response())
+}
+
+func (controller *postController) Insert(context *gin.Context) {
+	form := dto.Post{}
+	if err := context.ShouldBind(&form); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	if err := uploadPostImage(context, &form); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	post := controller.postService.Insert(form)
+	serializer := serializer.PostSerializer{Post: post}
+	context.JSON(http.StatusCreated, serializer.Response())
+}
+
+func (controller *postController) Update(context *gin.Context) {
+	form := dto.Post{}
+	if err := context.ShouldBind(&form); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	if err := uploadPostImage(context, &form); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	postId, _ := strconv.ParseUint(context.Param("postId"), 10, 64)
+	post, err := controller.postService.Update(postId, form)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	serializer := serializer.PostSerializer{Post: post}
+	context.JSON(http.StatusOK, serializer.Response())
+}
+
+func uploadPostImage(context *gin.Context, form *dto.Post) error {
+	file, _ := context.FormFile("image")
+	if file != nil {
+		fileName := filepath.Base(file.Filename)
+		if err := context.SaveUploadedFile(file, "media/images/"+fileName); err != nil {
+			return err
+		}
+		form.Image = "media/images/" + fileName
+	}
+	return nil
 }

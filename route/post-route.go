@@ -17,6 +17,7 @@ func PostRoute(db *gorm.DB, postRouter *gin.RouterGroup) {
 		postController controller.PostController = controller.NewPostController(postService)
 	)
 	postRouter.GET("", postController.All)
+	postRouter.GET("/:postId", postController.FindById)
 	postRouter.POST("", middleware.AuthorizeJWT(jwtService), postController.Insert)
-	postRouter.GET("/:id", postController.FindById)
+	postRouter.PUT("/:postId", middleware.AuthorizeJWT(jwtService), postController.Update)
 }

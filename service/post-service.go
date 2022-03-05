@@ -8,9 +8,10 @@ import (
 )
 
 type PostService interface {
-	Insert(postDto dto.Post) model.Post
 	All() []model.Post
 	FindById(postId uint64) (model.Post, error)
+	Insert(postDto dto.Post) model.Post
+	Update(postId uint64, postDto dto.Post) (model.Post, error)
 }
 
 type postService struct {
@@ -23,6 +24,14 @@ func NewPostService(postRepo repository.PostRepo) *postService {
 	}
 }
 
+func (service *postService) All() []model.Post {
+	return service.postRepo.AllPost()
+}
+
+func (service *postService) FindById(postId uint64) (model.Post, error) {
+	return service.postRepo.FindByIdWithCategory(postId)
+}
+
 func (service *postService) Insert(postDto dto.Post) model.Post {
 	postModel := model.Post{}
 	err := smapping.FillStruct(&postModel, smapping.MapFields(&postDto))
@@ -33,10 +42,24 @@ func (service *postService) Insert(postDto dto.Post) model.Post {
 	return res
 }
 
-func (service *postService) All() []model.Post {
-	return service.postRepo.AllPost()
-}
-
-func (service *postService) FindById(postId uint64) (model.Post, error) {
-	return service.postRepo.FindByPostId(postId)
+func (service *postService) Update(
+	postId uint64, postDto dto.Post,
+) (model.Post, error) {
+	post, err := service.postRepo.FindById(postId)
+	if err != nil {
+		return post, err
+	}
+	if postDto.Image == "" {
+		postDto.Image = post.Image
+	}
+	fillErr := smapping.FillStruct(&post, smapping.MapFields(&postDto))
+	if fillErr != nil {
+		panic(fillErr)
+	}
+	service.postRepo.Save(&post)
+	postWithCategory, err := service.postRepo.FindByIdWithCategory(postId)
+	if err != nil {
+		return postWithCategory, err
+	}
+	return postWithCategory, nil
 }
