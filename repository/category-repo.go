@@ -48,7 +48,5 @@ func (repo *categoryRepo) Save(category *model.Category) {
 }
 
 func (repo *categoryRepo) DeleteById(categoryId uint64) *gorm.DB {
-	// result := repo.db.Delete(&model.Category{}, categoryId)
-	// return result.Error
 	return repo.db.Delete(&model.Category{}, categoryId)
 }
