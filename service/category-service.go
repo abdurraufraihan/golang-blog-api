@@ -43,9 +43,9 @@ func (service *categoryService) Update(
 	if err != nil {
 		return category, err
 	}
-	validationErr := smapping.FillStruct(&category, smapping.MapFields(&categoryDto))
-	if validationErr != nil {
-		panic(validationErr)
+	fillErr := smapping.FillStruct(&category, smapping.MapFields(&categoryDto))
+	if fillErr != nil {
+		panic(fillErr)
 	}
 	service.categoryRepo.Save(&category)
 	return category, nil

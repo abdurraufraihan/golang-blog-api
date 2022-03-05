@@ -10,7 +10,7 @@ import (
 type CategoryRepo interface {
 	AllCategories() []model.Category
 	Insert(category model.Category) model.Category
-	GetById(id uint64) (model.Category, error)
+	GetById(categoryId uint64) (model.Category, error)
 	Save(category *model.Category)
 	DeleteById(categoryId uint64) *gorm.DB
 }
@@ -34,9 +34,9 @@ func (repo *categoryRepo) Insert(category model.Category) model.Category {
 	return category
 }
 
-func (repo *categoryRepo) GetById(id uint64) (model.Category, error) {
+func (repo *categoryRepo) GetById(categoryId uint64) (model.Category, error) {
 	category := model.Category{}
-	err := repo.db.First(&category, id).Error
+	err := repo.db.First(&category, categoryId).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return category, err
 	}
