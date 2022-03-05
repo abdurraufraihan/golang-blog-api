@@ -20,4 +20,5 @@ func PostRoute(db *gorm.DB, postRouter *gin.RouterGroup) {
 	postRouter.GET("/:postId", postController.FindById)
 	postRouter.POST("", middleware.AuthorizeJWT(jwtService), postController.Insert)
 	postRouter.PUT("/:postId", middleware.AuthorizeJWT(jwtService), postController.Update)
+	postRouter.DELETE("/:postId", middleware.AuthorizeJWT(jwtService), postController.DeleteById)
 }

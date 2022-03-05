@@ -13,6 +13,7 @@ type PostRepo interface {
 	FindById(postId uint64) (model.Post, error)
 	Insert(post model.Post) model.Post
 	Save(post *model.Post)
+	DeleteById(postId uint64) *gorm.DB
 }
 
 type postRepo struct {
@@ -55,4 +56,8 @@ func (repo *postRepo) Insert(post model.Post) model.Post {
 
 func (repo *postRepo) Save(post *model.Post) {
 	repo.db.Save(post)
+}
+
+func (repo *postRepo) DeleteById(postId uint64) *gorm.DB {
+	return repo.db.Delete(&model.Post{}, postId)
 }

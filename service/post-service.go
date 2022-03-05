@@ -5,6 +5,7 @@ import (
 	"github.com/abdurraufraihan/golang-blog-api/model"
 	"github.com/abdurraufraihan/golang-blog-api/repository"
 	"github.com/mashingan/smapping"
+	"gorm.io/gorm"
 )
 
 type PostService interface {
@@ -12,6 +13,7 @@ type PostService interface {
 	FindById(postId uint64) (model.Post, error)
 	Insert(postDto dto.Post) model.Post
 	Update(postId uint64, postDto dto.Post) (model.Post, error)
+	DeleteById(postId uint64) *gorm.DB
 }
 
 type postService struct {
@@ -62,4 +64,8 @@ func (service *postService) Update(
 		return postWithCategory, err
 	}
 	return postWithCategory, nil
+}
+
+func (service *postService) DeleteById(postId uint64) *gorm.DB {
+	return service.postRepo.DeleteById(postId)
 }

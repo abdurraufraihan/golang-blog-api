@@ -16,6 +16,7 @@ type PostController interface {
 	FindById(context *gin.Context)
 	Insert(context *gin.Context)
 	Update(context *gin.Context)
+	DeleteById(context *gin.Context)
 }
 
 type postController struct {
@@ -94,4 +95,17 @@ func uploadPostImage(context *gin.Context, form *dto.Post) error {
 		form.Image = "media/images/" + fileName
 	}
 	return nil
+}
+
+func (controller *postController) DeleteById(context *gin.Context) {
+	postId, _ := strconv.ParseUint(context.Param("postId"), 10, 64)
+	result := controller.postService.DeleteById(postId)
+	if result.Error != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": result.Error.Error()})
+		return
+	} else if result.RowsAffected < 1 {
+		context.JSON(http.StatusNotFound, gin.H{"error": "post does not exists"})
+		return
+	}
+	context.JSON(http.StatusNoContent, gin.H{})
 }
