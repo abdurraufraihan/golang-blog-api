@@ -14,6 +14,7 @@ type CategoryController interface {
 	All(context *gin.Context)
 	Insert(context *gin.Context)
 	Update(context *gin.Context)
+	DeleteById(context *gin.Context)
 }
 
 type categoryController struct {
@@ -59,4 +60,17 @@ func (controller *categoryController) Update(context *gin.Context) {
 	}
 	serializer := serializer.CategorySerializer{Category: category}
 	context.JSON(http.StatusOK, serializer.Response())
+}
+
+func (controller *categoryController) DeleteById(context *gin.Context) {
+	categoryId, _ := strconv.ParseUint(context.Param("categoryId"), 10, 64)
+	result := controller.categoryService.DeleteById(categoryId)
+	if result.Error != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": result.Error.Error()})
+		return
+	} else if result.RowsAffected < 1 {
+		context.JSON(http.StatusNotFound, gin.H{"error": "category does not exists"})
+		return
+	}
+	context.JSON(http.StatusNoContent, gin.H{})
 }

@@ -12,6 +12,7 @@ type CategoryRepo interface {
 	Insert(category model.Category) model.Category
 	GetById(id uint64) (model.Category, error)
 	Save(category *model.Category)
+	DeleteById(categoryId uint64) *gorm.DB
 }
 
 type categoryRepo struct {
@@ -44,4 +45,10 @@ func (repo *categoryRepo) GetById(id uint64) (model.Category, error) {
 
 func (repo *categoryRepo) Save(category *model.Category) {
 	repo.db.Save(category)
+}
+
+func (repo *categoryRepo) DeleteById(categoryId uint64) *gorm.DB {
+	// result := repo.db.Delete(&model.Category{}, categoryId)
+	// return result.Error
+	return repo.db.Delete(&model.Category{}, categoryId)
 }

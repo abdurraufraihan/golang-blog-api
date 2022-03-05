@@ -5,12 +5,14 @@ import (
 	"github.com/abdurraufraihan/golang-blog-api/model"
 	"github.com/abdurraufraihan/golang-blog-api/repository"
 	"github.com/mashingan/smapping"
+	"gorm.io/gorm"
 )
 
 type CategoryService interface {
 	All() []model.Category
 	Insert(categoryDto dto.Category) model.Category
 	Update(categoryId uint64, categoryDto dto.Category) (model.Category, error)
+	DeleteById(categoryId uint64) *gorm.DB
 }
 
 type categoryService struct {
@@ -47,4 +49,8 @@ func (service *categoryService) Update(
 	}
 	service.categoryRepo.Save(&category)
 	return category, nil
+}
+
+func (service *categoryService) DeleteById(categoryId uint64) *gorm.DB {
+	return service.categoryRepo.DeleteById(categoryId)
 }
