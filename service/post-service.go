@@ -54,11 +54,12 @@ func (service *postService) Update(
 	if postDto.Image == "" {
 		postDto.Image = post.Image
 	}
-	fillErr := smapping.FillStruct(&post, smapping.MapFields(&postDto))
-	if fillErr != nil {
+	if fillErr := smapping.FillStruct(&post, smapping.MapFields(&postDto)); fillErr != nil {
 		panic(fillErr)
 	}
-	service.postRepo.Save(&post)
+	if result := service.postRepo.Save(&post); result.Error != nil {
+		return post, result.Error
+	}
 	postWithCategory, err := service.postRepo.FindByIdWithCategory(postId)
 	if err != nil {
 		return postWithCategory, err

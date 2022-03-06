@@ -12,7 +12,7 @@ type PostRepo interface {
 	FindByIdWithCategory(postId uint64) (model.Post, error)
 	FindById(postId uint64) (model.Post, error)
 	Insert(post model.Post) model.Post
-	Save(post *model.Post)
+	Save(post *model.Post) *gorm.DB
 	DeleteById(postId uint64) *gorm.DB
 }
 
@@ -54,8 +54,8 @@ func (repo *postRepo) Insert(post model.Post) model.Post {
 	return post
 }
 
-func (repo *postRepo) Save(post *model.Post) {
-	repo.db.Save(post)
+func (repo *postRepo) Save(post *model.Post) *gorm.DB {
+	return repo.db.Save(post)
 }
 
 func (repo *postRepo) DeleteById(postId uint64) *gorm.DB {
