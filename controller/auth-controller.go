@@ -11,6 +11,7 @@ import (
 type AuthController interface {
 	Login(context *gin.Context)
 	Register(context *gin.Context)
+	VerifyToken(context *gin.Context)
 }
 
 type authController struct {
@@ -54,4 +55,18 @@ func (controller *authController) Register(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusOK, user)
+}
+
+func (controller *authController) VerifyToken(context *gin.Context) {
+	tokenDto := dto.Token{}
+	if err := context.ShouldBindJSON(&tokenDto); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	token, _ := controller.jwtService.ValidateToken(tokenDto.Token)
+	if token == nil || !token.Valid {
+		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"is_valid": false})
+		return
+	}
+	context.JSON(http.StatusOK, gin.H{"is_valid": true})
 }
