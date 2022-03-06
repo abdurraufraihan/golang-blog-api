@@ -34,8 +34,8 @@ func (controller *authController) Login(context *gin.Context) {
 	isValidCredential, userId :=
 		controller.authService.VerifyCredential(loginDto.Email, loginDto.Password)
 	if isValidCredential {
-		token := controller.jwtService.GenerateToken(userId)
-		context.JSON(http.StatusOK, gin.H{"token": token})
+		tokenPair := controller.jwtService.GenerateTokenPair(userId)
+		context.JSON(http.StatusOK, tokenPair)
 		return
 	}
 	context.JSON(http.StatusBadRequest, gin.H{"error": "invalid credential"})

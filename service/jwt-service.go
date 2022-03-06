@@ -9,7 +9,7 @@ import (
 )
 
 type JwtService interface {
-	GenerateToken(userId uint64) string
+	GenerateTokenPair(userId uint64) map[string]string
 	ValidateToken(tokenString string) (*jwt.Token, error)
 }
 
@@ -35,21 +35,30 @@ func getSecretKey() string {
 	return secretKey
 }
 
-func (service *jwtService) GenerateToken(userId uint64) string {
+func (service *jwtService) GenerateTokenPair(userId uint64) map[string]string {
 	claims := &jwtCustomClaim{
 		userId,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().AddDate(0, 1, 0).Unix(),
+			ExpiresAt: time.Now().AddDate(0, 0, 15).Unix(), // 15 days
 			Issuer:    service.issuer,
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	ss, err := token.SignedString([]byte(service.secretKey))
+	tokenString, err := token.SignedString([]byte(service.secretKey))
 	if err != nil {
 		panic(err)
 	}
-	return ss
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
+		ExpiresAt: time.Now().AddDate(0, 1, 0).Unix(), // 1 month
+		Issuer:    service.issuer,
+		IssuedAt:  time.Now().Unix(),
+	})
+	refreshTokenString, err := refreshToken.SignedString([]byte(service.secretKey))
+	if err != nil {
+		panic(err)
+	}
+	return map[string]string{"access_token": tokenString, "refresh_token": refreshTokenString}
 }
 
 func (service *jwtService) ValidateToken(tokenString string) (*jwt.Token, error) {
