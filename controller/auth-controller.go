@@ -5,6 +5,7 @@ import (
 
 	"github.com/abdurraufraihan/golang-blog-api/dto"
 	"github.com/abdurraufraihan/golang-blog-api/service"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,6 +13,7 @@ type AuthController interface {
 	Login(context *gin.Context)
 	Register(context *gin.Context)
 	VerifyToken(context *gin.Context)
+	RefreshToken(context *gin.Context)
 }
 
 type authController struct {
@@ -69,4 +71,22 @@ func (controller *authController) VerifyToken(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusOK, gin.H{"is_valid": true})
+}
+
+func (controller *authController) RefreshToken(context *gin.Context) {
+	tokenDto := dto.Token{}
+	if err := context.ShouldBindJSON(&tokenDto); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	token, err := controller.jwtService.ValidateToken(tokenDto.Token)
+	if token == nil || !token.Valid {
+		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+		context.JSON(http.StatusOK, controller.jwtService.GenerateTokenPair(claims["user_id"]))
+	} else {
+		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "can not able to claim"})
+	}
 }

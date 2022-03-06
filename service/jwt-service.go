@@ -9,12 +9,12 @@ import (
 )
 
 type JwtService interface {
-	GenerateTokenPair(userId uint64) map[string]string
+	GenerateTokenPair(userId interface{}) map[string]string
 	ValidateToken(tokenString string) (*jwt.Token, error)
 }
 
 type jwtCustomClaim struct {
-	UserId uint64 `json:"user_id"`
+	UserId interface{} `json:"user_id"`
 	jwt.StandardClaims
 }
 
@@ -35,25 +35,28 @@ func getSecretKey() string {
 	return secretKey
 }
 
-func (service *jwtService) GenerateTokenPair(userId uint64) map[string]string {
-	claims := &jwtCustomClaim{
+func (service *jwtService) getTokenClaims(
+	userId interface{}, expiryDays int,
+) *jwtCustomClaim {
+	return &jwtCustomClaim{
 		userId,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().AddDate(0, 0, 15).Unix(), // 15 days
+			ExpiresAt: time.Now().AddDate(0, 0, expiryDays).Unix(),
 			Issuer:    service.issuer,
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+}
+
+func (service *jwtService) GenerateTokenPair(userId interface{}) map[string]string {
+	tokenClaims := service.getTokenClaims(userId, 15)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenClaims)
 	tokenString, err := token.SignedString([]byte(service.secretKey))
 	if err != nil {
 		panic(err)
 	}
-	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		ExpiresAt: time.Now().AddDate(0, 1, 0).Unix(), // 1 month
-		Issuer:    service.issuer,
-		IssuedAt:  time.Now().Unix(),
-	})
+	refreshTokenClaims := service.getTokenClaims(userId, 30)
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshTokenClaims)
 	refreshTokenString, err := refreshToken.SignedString([]byte(service.secretKey))
 	if err != nil {
 		panic(err)
