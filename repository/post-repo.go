@@ -2,13 +2,15 @@ package repository
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/abdurraufraihan/golang-blog-api/model"
 	"gorm.io/gorm"
 )
 
 type PostRepo interface {
-	AllPost() []model.Post
+	PostCount() int64
+	AllPost(limit string, offset string) []model.Post
 	FindByIdWithCategory(postId uint64) (model.Post, error)
 	FindById(postId uint64) (model.Post, error)
 	Insert(post model.Post) model.Post
@@ -24,9 +26,23 @@ func NewPostRepo(db *gorm.DB) *postRepo {
 	return &postRepo{db: db}
 }
 
-func (repo *postRepo) AllPost() []model.Post {
+func (repo *postRepo) PostCount() int64 {
+	var count int64
+	repo.db.Model(&model.Post{}).Count(&count)
+	return count
+}
+
+func (repo *postRepo) AllPost(limit string, offset string) []model.Post {
+	postLimit, err := strconv.Atoi(limit)
+	if err != nil || postLimit == 0 {
+		postLimit = -1
+	}
+	postOffset, err := strconv.Atoi(offset)
+	if err != nil || postOffset == 0 {
+		postOffset = -1
+	}
 	var posts []model.Post
-	repo.db.Preload("Category").Find(&posts)
+	repo.db.Limit(postLimit).Offset(postOffset).Preload("Category").Find(&posts)
 	return posts
 }
 

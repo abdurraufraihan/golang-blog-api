@@ -30,9 +30,12 @@ func NewPostController(postService service.PostService) *postController {
 }
 
 func (controller *postController) All(context *gin.Context) {
-	posts := controller.postService.All()
+	limit := context.Query("limit")
+	offset := context.Query("offset")
+	postCount, posts := controller.postService.All(limit, offset)
 	serializer := serializer.PostsSerializer{Posts: posts}
-	context.JSON(http.StatusOK, serializer.Response())
+	context.JSON(
+		http.StatusOK, gin.H{"totalPost": postCount, "posts": serializer.Response()})
 }
 
 func (controller *postController) FindById(context *gin.Context) {

@@ -9,7 +9,7 @@ import (
 )
 
 type PostService interface {
-	All() []model.Post
+	All(limit string, offset string) (int64, []model.Post)
 	FindById(postId uint64) (model.Post, error)
 	Insert(postDto dto.Post) model.Post
 	Update(postId uint64, postDto dto.Post) (model.Post, error)
@@ -26,8 +26,8 @@ func NewPostService(postRepo repository.PostRepo) *postService {
 	}
 }
 
-func (service *postService) All() []model.Post {
-	return service.postRepo.AllPost()
+func (service *postService) All(limit string, offset string) (int64, []model.Post) {
+	return service.postRepo.PostCount(), service.postRepo.AllPost(limit, offset)
 }
 
 func (service *postService) FindById(postId uint64) (model.Post, error) {
