@@ -13,5 +13,5 @@ func main() {
 	defer config.CloseDbConnection(db)
 	router := gin.Default()
 	route.RootRoute(db, router)
-	router.Run("localhost:8080")
+	router.Run(":8000")
 }

@@ -20,7 +20,7 @@ type dbConfig struct {
 
 func getDBConfig() *dbConfig {
 	return &dbConfig{
-		host:     "localhost",
+		host:     "go_blog_app_db",
 		user:     "postgres",
 		password: "123456",
 		dbname:   "goblog",
