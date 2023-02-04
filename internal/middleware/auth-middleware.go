@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/abdurraufraihan/golang-blog-api/service"
+	"github.com/abdurraufraihan/golang-blog-api/internal/service"
 	"github.com/gin-gonic/gin"
 )
 

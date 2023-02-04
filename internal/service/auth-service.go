@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/abdurraufraihan/golang-blog-api/dto"
-	"github.com/abdurraufraihan/golang-blog-api/model"
-	"github.com/abdurraufraihan/golang-blog-api/repository"
+	"github.com/abdurraufraihan/golang-blog-api/internal/dto"
+	"github.com/abdurraufraihan/golang-blog-api/internal/model"
+	"github.com/abdurraufraihan/golang-blog-api/internal/repository"
 	"github.com/mashingan/smapping"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"

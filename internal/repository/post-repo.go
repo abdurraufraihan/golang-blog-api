@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/abdurraufraihan/golang-blog-api/model"
+	"github.com/abdurraufraihan/golang-blog-api/internal/model"
 	"gorm.io/gorm"
 )
 

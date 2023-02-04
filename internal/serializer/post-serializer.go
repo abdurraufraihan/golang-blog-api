@@ -3,7 +3,7 @@ package serializer
 import (
 	"time"
 
-	"github.com/abdurraufraihan/golang-blog-api/model"
+	"github.com/abdurraufraihan/golang-blog-api/internal/model"
 )
 
 type PostResponse struct {

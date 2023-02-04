@@ -1,10 +1,10 @@
 package route
 
 import (
-	"github.com/abdurraufraihan/golang-blog-api/controller"
-	"github.com/abdurraufraihan/golang-blog-api/middleware"
-	"github.com/abdurraufraihan/golang-blog-api/repository"
-	"github.com/abdurraufraihan/golang-blog-api/service"
+	"github.com/abdurraufraihan/golang-blog-api/internal/controller"
+	"github.com/abdurraufraihan/golang-blog-api/internal/middleware"
+	"github.com/abdurraufraihan/golang-blog-api/internal/repository"
+	"github.com/abdurraufraihan/golang-blog-api/internal/service"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )

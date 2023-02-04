@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/abdurraufraihan/golang-blog-api/dto"
-	"github.com/abdurraufraihan/golang-blog-api/serializer"
-	"github.com/abdurraufraihan/golang-blog-api/service"
+	"github.com/abdurraufraihan/golang-blog-api/internal/dto"
+	"github.com/abdurraufraihan/golang-blog-api/internal/serializer"
+	"github.com/abdurraufraihan/golang-blog-api/internal/service"
 	"github.com/gin-gonic/gin"
 )
 

@@ -3,8 +3,8 @@ package controller
 import (
 	"net/http"
 
-	"github.com/abdurraufraihan/golang-blog-api/dto"
-	"github.com/abdurraufraihan/golang-blog-api/service"
+	"github.com/abdurraufraihan/golang-blog-api/internal/dto"
+	"github.com/abdurraufraihan/golang-blog-api/internal/service"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
@@ -34,8 +34,7 @@ func (controller *authController) Login(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	isValidCredential, userId :=
-		controller.authService.VerifyCredential(loginDto.Email, loginDto.Password)
+	isValidCredential, userId := controller.authService.VerifyCredential(loginDto.Email, loginDto.Password)
 	if isValidCredential {
 		tokenPair := controller.jwtService.GenerateTokenPair(userId)
 		context.JSON(http.StatusOK, tokenPair)
