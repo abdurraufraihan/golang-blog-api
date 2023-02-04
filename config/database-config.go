@@ -1,59 +1,25 @@
 package config
 
-import (
-	"fmt"
-
-	"github.com/abdurraufraihan/golang-blog-api/model"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-)
+import "os"
 
 type dbConfig struct {
-	host     string
-	user     string
-	password string
-	dbname   string
-	port     int
-	sslmode  string
-	timezone string
+	Host     string
+	User     string
+	Password string
+	Dbname   string
+	Port     string
+	Sslmode  string
+	Timezone string
 }
 
-func getDBConfig() *dbConfig {
+func GetDBConfig() *dbConfig {
 	return &dbConfig{
-		host:     "go_blog_app_db",
-		user:     "postgres",
-		password: "123456",
-		dbname:   "goblog",
-		port:     5432,
-		sslmode:  "disable",
-		timezone: "UTC",
+		Host:     os.Getenv("DB_HOST"),
+		User:     os.Getenv("DB_USER"),
+		Password: os.Getenv("DB_PASSWORD"),
+		Dbname:   os.Getenv("DB_NAME"),
+		Port:     os.Getenv("DB_PORT"),
+		Sslmode:  "disable",
+		Timezone: "UTC",
 	}
-}
-
-func ConnectWithDB() *gorm.DB {
-	dbConfig := getDBConfig()
-	dns := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s",
-		dbConfig.host,
-		dbConfig.user,
-		dbConfig.password,
-		dbConfig.dbname,
-		dbConfig.port,
-		dbConfig.sslmode,
-		dbConfig.timezone,
-	)
-	db, err := gorm.Open(postgres.Open(dns), &gorm.Config{})
-	if err != nil {
-		panic("Failed to create connection with database")
-	}
-	db.AutoMigrate(&model.User{}, &model.Category{}, &model.Post{})
-	return db
-}
-
-func CloseDbConnection(db *gorm.DB) {
-	dbSql, err := db.DB()
-	if err != nil {
-		panic("Failed to close connection with Database")
-	}
-	dbSql.Close()
 }

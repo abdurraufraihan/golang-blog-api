@@ -17,3 +17,6 @@
 
 #build files
 /app
+
+#env files
+.env
