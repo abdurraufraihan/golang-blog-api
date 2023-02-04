@@ -1,22 +1,23 @@
 version: "3"
 
 services:
-  go-blog-app:
+  blog_app:
     container_name: go_blog_app
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     ports:
       - 8000:8000
     depends_on:
-      - go-blog-postgres
+      blog_db:
+        condition: service_healthy
     volumes:
       - ./:/blog
     networks:
       - go-blog-net
 
-  go-blog-postgres:
-    image: postgres:latest
+  blog_db:
+    image: postgres:13
     container_name: go_blog_app_db
     environment:
       - POSTGRES_USER=postgres
@@ -26,6 +27,11 @@ services:
       - goblog_postgres:/var/lib/postgresql/data
     networks:
       - go-blog-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   goblog_postgres:
