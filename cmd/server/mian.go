@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/abdurraufraihan/golang-blog-api/config"
-	"github.com/abdurraufraihan/golang-blog-api/route"
+	"github.com/abdurraufraihan/golang-blog-api/internal/route"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
