@@ -29,6 +29,13 @@ func NewPostController(postService service.PostService) *postController {
 	}
 }
 
+// GetPosts             godoc
+// @Summary      Get posts list
+// @Description  Responds with the list of all posts as JSON.
+// @Tags         posts
+// @Produce      json
+// @Success      200  {object}  serializer.PostResponse
+// @Router       /posts [get]
 func (controller *postController) All(context *gin.Context) {
 	limit := context.Query("limit")
 	offset := context.Query("offset")
@@ -38,6 +45,14 @@ func (controller *postController) All(context *gin.Context) {
 		http.StatusOK, gin.H{"totalPost": postCount, "posts": serializer.Response()})
 }
 
+// GetPost             godoc
+// @Summary      Get post
+// @Description  Responds with post as JSON.
+// @Tags         posts
+// @Produce      json
+// @Param        id  path      uint  true  "search post by id"
+// @Success      200  {object}  serializer.PostResponse
+// @Router       /posts/{id} [get]
 func (controller *postController) FindById(context *gin.Context) {
 	postId, err := strconv.ParseUint(context.Param("postId"), 10, 64)
 	if err != nil {
@@ -53,6 +68,14 @@ func (controller *postController) FindById(context *gin.Context) {
 	context.JSON(http.StatusOK, serializer.Response())
 }
 
+// InsertPost             godoc
+// @Summary      Insert post
+// @Description  Responds with post as JSON.
+// @Tags         posts
+// @Produce      json
+// @Param data body dto.Post true "Post dto"
+// @Success      201  {object}  serializer.PostResponse
+// @Router       /posts [post]
 func (controller *postController) Insert(context *gin.Context) {
 	form := dto.Post{}
 	if err := context.ShouldBind(&form); err != nil {
@@ -68,6 +91,15 @@ func (controller *postController) Insert(context *gin.Context) {
 	context.JSON(http.StatusCreated, serializer.Response())
 }
 
+// UpdatePost             godoc
+// @Summary      Update post
+// @Description  Responds with post as JSON.
+// @Tags         posts
+// @Produce      json
+// @Param        id  path      uint  true  "update post by id"
+// @Param data body dto.Post true "Post dto"
+// @Success      200  {object}  serializer.PostResponse
+// @Router       /posts/{id} [put]
 func (controller *postController) Update(context *gin.Context) {
 	form := dto.Post{}
 	if err := context.ShouldBind(&form); err != nil {
@@ -100,6 +132,14 @@ func uploadPostImage(context *gin.Context, form *dto.Post) error {
 	return nil
 }
 
+// DeletePost             godoc
+// @Summary      Delete post
+// @Description  Responds with post as JSON.
+// @Tags         posts
+// @Produce      json
+// @Param        id  path      uint  true  "delete post by id"
+// @Success      204
+// @Router       /posts/{id} [delete]
 func (controller *postController) DeleteById(context *gin.Context) {
 	postId, _ := strconv.ParseUint(context.Param("postId"), 10, 64)
 	result := controller.postService.DeleteById(postId)

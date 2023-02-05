@@ -1,0 +1,144 @@
+basePath: /api/v1
+definitions:
+  dto.Post:
+    properties:
+      category:
+        type: integer
+      description:
+        type: string
+      title:
+        type: string
+    required:
+    - category
+    - description
+    - title
+    type: object
+  serializer.CategoryResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  serializer.PostResponse:
+    properties:
+      category:
+        $ref: '#/definitions/serializer.CategoryResponse'
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact:
+    email: abdurraufraihan@gmail.com
+    name: Abdur Rauf Raihan
+    url: https://linkedin.com/abdurraufraihan
+  description: A Blog API in Go using Gin framework.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Gin Blog Api
+  version: "1.0"
+paths:
+  /posts:
+    get:
+      description: Responds with the list of all posts as JSON.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/serializer.PostResponse'
+      summary: Get posts list
+      tags:
+      - posts
+    post:
+      description: Responds with post as JSON.
+      parameters:
+      - description: Post dto
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Post'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/serializer.PostResponse'
+      summary: Insert post
+      tags:
+      - posts
+  /posts/{id}:
+    delete:
+      description: Responds with post as JSON.
+      parameters:
+      - description: delete post by id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete post
+      tags:
+      - posts
+    get:
+      description: Responds with post as JSON.
+      parameters:
+      - description: search post by id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/serializer.PostResponse'
+      summary: Get post
+      tags:
+      - posts
+    put:
+      description: Responds with post as JSON.
+      parameters:
+      - description: update post by id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Post dto
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Post'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/serializer.PostResponse'
+      summary: Update post
+      tags:
+      - posts
+swagger: "2.0"
