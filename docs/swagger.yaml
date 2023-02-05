@@ -1,5 +1,15 @@
 basePath: /api/v1
 definitions:
+  dto.Login:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
   dto.Post:
     properties:
       category:
@@ -12,6 +22,27 @@ definitions:
     - category
     - description
     - title
+    type: object
+  dto.Token:
+    properties:
+      token:
+        type: string
+    required:
+    - token
+    type: object
+  dto.User:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - name
+    - password
     type: object
   serializer.CategoryResponse:
     properties:
@@ -50,6 +81,24 @@ info:
   title: Gin Blog Api
   version: "1.0"
 paths:
+  /login:
+    post:
+      description: Responds with token pair as JSON.
+      parameters:
+      - description: Login dto
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: User login
+      tags:
+      - auth
   /posts:
     get:
       description: Responds with the list of all posts as JSON.
@@ -141,4 +190,58 @@ paths:
       summary: Update post
       tags:
       - posts
+  /signup:
+    post:
+      description: Responds with user data as JSON.
+      parameters:
+      - description: User dto
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: User register
+      tags:
+      - auth
+  /token/refresh:
+    post:
+      description: Responds with token pair as JSON.
+      parameters:
+      - description: Token dto
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Token'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Refresh user token
+      tags:
+      - auth
+  /token/verify:
+    post:
+      description: Responds with is_valid status as JSON.
+      parameters:
+      - description: Token dto
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Token'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Verify user token
+      tags:
+      - auth
 swagger: "2.0"

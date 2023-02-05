@@ -27,6 +27,14 @@ func NewAuthController(
 	return &authController{authService: authService, jwtService: jwtService}
 }
 
+// Login             godoc
+// @Summary      User login
+// @Description  Responds with token pair as JSON.
+// @Tags         auth
+// @Produce      json
+// @Param data body dto.Login true "Login dto"
+// @Success      200
+// @Router       /login [post]
 func (controller *authController) Login(context *gin.Context) {
 	var loginDto dto.Login
 	err := context.ShouldBindJSON(&loginDto)
@@ -43,6 +51,14 @@ func (controller *authController) Login(context *gin.Context) {
 	context.JSON(http.StatusBadRequest, gin.H{"error": "invalid credential"})
 }
 
+// Register             godoc
+// @Summary      User register
+// @Description  Responds with user data as JSON.
+// @Tags         auth
+// @Produce      json
+// @Param data body dto.User true "User dto"
+// @Success      200
+// @Router       /signup [post]
 func (controller *authController) Register(context *gin.Context) {
 	var userDto dto.User
 	err := context.ShouldBindJSON(&userDto)
@@ -58,6 +74,14 @@ func (controller *authController) Register(context *gin.Context) {
 	context.JSON(http.StatusOK, user)
 }
 
+// Verify Token             godoc
+// @Summary      Verify user token
+// @Description  Responds with is_valid status as JSON.
+// @Tags         auth
+// @Produce      json
+// @Param data body dto.Token true "Token dto"
+// @Success      200
+// @Router       /token/verify [post]
 func (controller *authController) VerifyToken(context *gin.Context) {
 	tokenDto := dto.Token{}
 	if err := context.ShouldBindJSON(&tokenDto); err != nil {
@@ -72,6 +96,14 @@ func (controller *authController) VerifyToken(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"is_valid": true})
 }
 
+// Refresh Token             godoc
+// @Summary      Refresh user token
+// @Description  Responds with token pair as JSON.
+// @Tags         auth
+// @Produce      json
+// @Param data body dto.Token true "Token dto"
+// @Success      200
+// @Router       /token/refresh [post]
 func (controller *authController) RefreshToken(context *gin.Context) {
 	tokenDto := dto.Token{}
 	if err := context.ShouldBindJSON(&tokenDto); err != nil {
