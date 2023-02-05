@@ -1,5 +1,13 @@
 basePath: /api/v1
 definitions:
+  dto.Category:
+    properties:
+      name:
+        maxLength: 100
+        type: string
+    required:
+    - name
+    type: object
   dto.Login:
     properties:
       email:
@@ -81,6 +89,79 @@ info:
   title: Gin Blog Api
   version: "1.0"
 paths:
+  /categories:
+    get:
+      description: Responds with the list of all categories as JSON.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/serializer.CategoryResponse'
+      summary: Get categories list
+      tags:
+      - categories
+    post:
+      description: Responds with category as JSON.
+      parameters:
+      - description: Category dto
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Category'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/serializer.CategoryResponse'
+      summary: Insert category
+      tags:
+      - categories
+  /categories/{id}:
+    delete:
+      description: Responds with category as JSON.
+      parameters:
+      - description: delete category by id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete category
+      tags:
+      - categories
+    put:
+      description: Responds with category as JSON.
+      parameters:
+      - description: update category by id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Category dto
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Category'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/serializer.CategoryResponse'
+      summary: Update category
+      tags:
+      - categories
   /login:
     post:
       description: Responds with token pair as JSON.
