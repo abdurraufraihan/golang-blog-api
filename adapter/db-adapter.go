@@ -25,7 +25,7 @@ func ConnectWithDB() *gorm.DB {
 	if err != nil {
 		panic("Failed to create connection with database")
 	}
-	db.AutoMigrate(&model.User{}, &model.Category{}, &model.Post{}, &model.Category{})
+	db.AutoMigrate(&model.User{}, &model.Category{}, &model.Post{}, &model.Comment{})
 	return db
 }
 
