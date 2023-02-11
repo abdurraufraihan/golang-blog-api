@@ -8,7 +8,7 @@ import (
 
 type AuthRepo interface {
 	Register(user model.User) (*gorm.DB, model.User)
-	FindByEmail(email string) model.User
+	FindByEmail(email string) (*gorm.DB, model.User)
 }
 
 type authRepo struct {
@@ -25,10 +25,10 @@ func (repo *authRepo) Register(user model.User) (*gorm.DB, model.User) {
 	return userResult, user
 }
 
-func (repo *authRepo) FindByEmail(email string) model.User {
+func (repo *authRepo) FindByEmail(email string) (*gorm.DB, model.User) {
 	user := model.User{}
-	repo.db.Where("email = ?", email).Take(&user)
-	return user
+	userResult := repo.db.Where("email = ?", email).Take(&user)
+	return userResult, user
 }
 
 func hashAndSalt(password []byte) string {
