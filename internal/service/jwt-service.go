@@ -1,16 +1,15 @@
 package service
 
 import (
-	"fmt"
 	"os"
 	"time"
 
+	"github.com/abdurraufraihan/golang-blog-api/internal/utils"
 	"github.com/dgrijalva/jwt-go"
 )
 
 type JwtService interface {
 	GenerateTokenPair(userId interface{}) map[string]string
-	ValidateToken(tokenString string) (*jwt.Token, error)
 }
 
 type jwtCustomClaim struct {
@@ -24,15 +23,7 @@ type jwtService struct {
 }
 
 func NewJwtService() *jwtService {
-	return &jwtService{issuer: "raihan", secretKey: getSecretKey()}
-}
-
-func getSecretKey() string {
-	secretKey := os.Getenv("JWT_SECRET_KEY")
-	if secretKey != "" {
-		secretKey = "fc93cb07e1ad92898527100e58a1cf1d1e7"
-	}
-	return secretKey
+	return &jwtService{issuer: os.Getenv("TOKEN_ISSUER"), secretKey: utils.GetSecretKey()}
 }
 
 func (service *jwtService) getTokenClaims(
@@ -62,13 +53,4 @@ func (service *jwtService) GenerateTokenPair(userId interface{}) map[string]stri
 		panic(err)
 	}
 	return map[string]string{"access_token": tokenString, "refresh_token": refreshTokenString}
-}
-
-func (service *jwtService) ValidateToken(tokenString string) (*jwt.Token, error) {
-	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return []byte(service.secretKey), nil
-	})
 }

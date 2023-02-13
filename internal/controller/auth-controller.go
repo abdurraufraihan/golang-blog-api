@@ -5,6 +5,7 @@ import (
 
 	"github.com/abdurraufraihan/golang-blog-api/internal/dto"
 	"github.com/abdurraufraihan/golang-blog-api/internal/service"
+	"github.com/abdurraufraihan/golang-blog-api/internal/utils"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
@@ -88,7 +89,7 @@ func (controller *authController) VerifyToken(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	token, _ := controller.jwtService.ValidateToken(tokenDto.Token)
+	token, _ := utils.ValidateToken(tokenDto.Token)
 	if token == nil || !token.Valid {
 		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"is_valid": false})
 		return
@@ -110,7 +111,7 @@ func (controller *authController) RefreshToken(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	token, err := controller.jwtService.ValidateToken(tokenDto.Token)
+	token, err := utils.ValidateToken(tokenDto.Token)
 	if token == nil || !token.Valid {
 		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

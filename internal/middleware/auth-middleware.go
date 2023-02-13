@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/abdurraufraihan/golang-blog-api/internal/service"
+	"github.com/abdurraufraihan/golang-blog-api/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,7 +18,7 @@ func AuthorizeJWT(jwtService service.JwtService) gin.HandlerFunc {
 			return
 		}
 		tokenString := authHeader[7:] // remove Bearer from token
-		token, err := jwtService.ValidateToken(tokenString)
+		token, err := utils.ValidateToken(tokenString)
 		if token == nil || !token.Valid {
 			context.AbortWithStatusJSON(
 				http.StatusUnauthorized, gin.H{"error": err.Error()},
