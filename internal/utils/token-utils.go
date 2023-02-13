@@ -3,8 +3,10 @@ package utils
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 )
 
 func GetSecretKey() string {
@@ -22,4 +24,12 @@ func ValidateToken(tokenString string) (*jwt.Token, error) {
 		}
 		return []byte(GetSecretKey()), nil
 	})
+}
+
+func GetTokenString(context *gin.Context) string {
+	bearerToken := context.GetHeader("Authorization")
+	if len(strings.Split(bearerToken, " ")) == 2 {
+		return strings.Split(bearerToken, " ")[1]
+	}
+	return ""
 }
