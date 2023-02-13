@@ -1,5 +1,5 @@
 package dto
 
-type CommentDto struct {
+type Comment struct {
 	Body string `json:"body" binding:"required,max=100"`
 }

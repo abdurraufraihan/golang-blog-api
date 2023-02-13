@@ -8,7 +8,7 @@ import (
 )
 
 type CommentService interface {
-	Insert(postId int) model.Comment
+	Insert(commentDto dto.Comment, postId, userId uint) model.Comment
 }
 
 type commentService struct {
@@ -19,7 +19,7 @@ func NewCommentService(commentRepo repository.CommentRepo) *commentService {
 	return &commentService{commentRepo: commentRepo}
 }
 
-func (service *commentService) Insert(commentDto dto.CommentDto, postId, userId uint) model.Comment {
+func (service *commentService) Insert(commentDto dto.Comment, postId, userId uint) model.Comment {
 	commentModel := model.Comment{}
 	err := smapping.FillStruct(&commentModel, smapping.MapFields(&commentDto))
 	if err != nil {

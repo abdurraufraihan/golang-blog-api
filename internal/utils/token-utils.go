@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
@@ -32,4 +33,20 @@ func GetTokenString(context *gin.Context) string {
 		return strings.Split(bearerToken, " ")[1]
 	}
 	return ""
+}
+
+func GetUserIDFromToken(tokenString string) (uint, error) {
+	token, err := ValidateToken(tokenString)
+	if err != nil {
+		return 0, err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if ok && token.Valid {
+		uid, err := strconv.ParseUint(fmt.Sprintf("%.0f", claims["user_id"]), 10, 32)
+		if err != nil {
+			return 0, err
+		}
+		return uint(uid), nil
+	}
+	return 0, nil
 }
