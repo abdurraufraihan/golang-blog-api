@@ -42,13 +42,17 @@ func (repo *postRepo) AllPost(limit string, offset string) []model.Post {
 		postOffset = -1
 	}
 	var posts []model.Post
-	repo.db.Limit(postLimit).Offset(postOffset).Preload("Category").Find(&posts)
+	repo.db.Limit(postLimit).Offset(postOffset).Preload("Category").Preload("Comments", func(db *gorm.DB) *gorm.DB {
+		return db.Limit(5).Order("id desc")
+	}).Find(&posts)
 	return posts
 }
 
 func (repo *postRepo) FindByIdWithCategory(postId uint64) (model.Post, error) {
 	var post model.Post
-	result := repo.db.Preload("Category").First(&post, postId)
+	result := repo.db.Preload("Category").Preload("Comments", func(db *gorm.DB) *gorm.DB {
+		return db.Limit(5).Order("id desc")
+	}).First(&post, postId)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return post, result.Error
 	}
