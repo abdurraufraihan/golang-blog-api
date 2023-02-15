@@ -300,6 +300,62 @@ const docTemplate = `{
                 }
             }
         },
+        "/posts/{postId}/comments": {
+            "get": {
+                "description": "Responds with the list of all comments by postId as JSON.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "comments"
+                ],
+                "summary": "Get comments list by postId",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/serializer.CommentResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Responds with comment as JSON.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "comments"
+                ],
+                "summary": "Insert comment",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Insert comment by postId",
+                        "name": "postId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Comment dto",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Comment"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/serializer.CommentResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/signup": {
             "post": {
                 "description": "Responds with user data as JSON.",
@@ -398,6 +454,18 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.Comment": {
+            "type": "object",
+            "required": [
+                "body"
+            ],
+            "properties": {
+                "body": {
+                    "type": "string",
+                    "maxLength": 100
+                }
+            }
+        },
         "dto.Login": {
             "type": "object",
             "required": [
@@ -474,11 +542,28 @@ const docTemplate = `{
                 }
             }
         },
+        "serializer.CommentResponse": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
         "serializer.PostResponse": {
             "type": "object",
             "properties": {
                 "category": {
                     "$ref": "#/definitions/serializer.CategoryResponse"
+                },
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serializer.CommentResponse"
+                    }
                 },
                 "created_at": {
                     "type": "string"

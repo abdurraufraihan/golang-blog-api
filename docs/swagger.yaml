@@ -8,6 +8,14 @@ definitions:
     required:
     - name
     type: object
+  dto.Comment:
+    properties:
+      body:
+        maxLength: 100
+        type: string
+    required:
+    - body
+    type: object
   dto.Login:
     properties:
       email:
@@ -59,10 +67,21 @@ definitions:
       name:
         type: string
     type: object
+  serializer.CommentResponse:
+    properties:
+      body:
+        type: string
+      id:
+        type: integer
+    type: object
   serializer.PostResponse:
     properties:
       category:
         $ref: '#/definitions/serializer.CategoryResponse'
+      comments:
+        items:
+          $ref: '#/definitions/serializer.CommentResponse'
+        type: array
       created_at:
         type: string
       description:
@@ -271,6 +290,43 @@ paths:
       summary: Update post
       tags:
       - posts
+  /posts/{postId}/comments:
+    get:
+      description: Responds with the list of all comments by postId as JSON.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/serializer.CommentResponse'
+      summary: Get comments list by postId
+      tags:
+      - comments
+    post:
+      description: Responds with comment as JSON.
+      parameters:
+      - description: Insert comment by postId
+        in: path
+        name: postId
+        required: true
+        type: integer
+      - description: Comment dto
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Comment'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/serializer.CommentResponse'
+      summary: Insert comment
+      tags:
+      - comments
   /signup:
     post:
       description: Responds with user data as JSON.
