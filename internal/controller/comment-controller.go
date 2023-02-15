@@ -12,6 +12,7 @@ import (
 )
 
 type CommentController interface {
+	All(context *gin.Context)
 	Insert(context *gin.Context)
 }
 
@@ -23,6 +24,26 @@ func NewCommentController(commentService service.CommentService) *commentControl
 	return &commentController{
 		commentService: commentService,
 	}
+}
+
+// GetComments             godoc
+// @Summary      Get comments list by postId
+// @Description  Responds with the list of all comments by postId as JSON.
+// @Tags         comments
+// @Produce      json
+// @Success      200  {object}  serializer.CommentResponse
+// @Router       /posts/{postId}/comments [get]
+func (controller *commentController) All(context *gin.Context) {
+	limit := context.Query("limit")
+	offset := context.Query("offset")
+	postId, err := strconv.ParseUint(context.Param("postId"), 10, 32)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "postId param not found"})
+		return
+	}
+	comments := controller.commentService.All(limit, offset, uint(postId))
+	serializer := serializer.CommentsSerializer{Comments: comments}
+	context.JSON(http.StatusOK, serializer.Response())
 }
 
 // InsertComment             godoc

@@ -15,5 +15,6 @@ func CommentRoute(db *gorm.DB, CommentRouter *gin.RouterGroup) {
 		commentService    service.CommentService       = service.NewCommentService(commentRepository)
 		commentController controller.CommentController = controller.NewCommentController(commentService)
 	)
+	CommentRouter.GET("", commentController.All)
 	CommentRouter.POST("", middleware.AuthorizeJWT(), commentController.Insert)
 }
