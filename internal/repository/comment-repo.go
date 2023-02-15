@@ -32,7 +32,7 @@ func (repo *commentRepo) AllCommentByPostId(
 		commentOffset = -1
 	}
 	var comments []model.Comment
-	repo.db.Where("post_id = ?", postId).Limit(commentLimit).
+	repo.db.Where("post_id = ?", postId).Order("id desc").Limit(commentLimit).
 		Offset(commentOffset).Find(&comments)
 	return comments
 }

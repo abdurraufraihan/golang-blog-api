@@ -8,6 +8,7 @@ import (
 )
 
 type CommentService interface {
+	All(limit string, offset string, postId uint) []model.Comment
 	Insert(commentDto dto.Comment, postId, userId uint) model.Comment
 }
 
@@ -17,6 +18,10 @@ type commentService struct {
 
 func NewCommentService(commentRepo repository.CommentRepo) *commentService {
 	return &commentService{commentRepo: commentRepo}
+}
+
+func (service *commentService) All(limit string, offset string, postId uint) []model.Comment {
+	return service.commentRepo.AllCommentByPostId(limit, offset, postId)
 }
 
 func (service *commentService) Insert(commentDto dto.Comment, postId, userId uint) model.Comment {
