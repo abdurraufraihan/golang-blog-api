@@ -8,6 +8,7 @@ import (
 	"github.com/abdurraufraihan/golang-blog-api/internal/dto"
 	"github.com/abdurraufraihan/golang-blog-api/internal/serializer"
 	"github.com/abdurraufraihan/golang-blog-api/internal/service"
+	"github.com/abdurraufraihan/golang-blog-api/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -42,7 +43,7 @@ func (controller *postController) All(context *gin.Context) {
 	postCount, posts := controller.postService.All(limit, offset)
 	serializer := serializer.PostsSerializer{Posts: posts}
 	context.JSON(
-		http.StatusOK, gin.H{"totalPost": postCount, "posts": serializer.Response()})
+		http.StatusOK, utils.GetResponse(gin.H{"totalPost": postCount, "posts": serializer.Response()}))
 }
 
 // GetPost             godoc
@@ -56,16 +57,16 @@ func (controller *postController) All(context *gin.Context) {
 func (controller *postController) FindById(context *gin.Context) {
 	postId, err := strconv.ParseUint(context.Param("postId"), 10, 64)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "No param id was found"})
+		context.JSON(http.StatusBadRequest, utils.GetErrorResponse("No param id was found"))
 		return
 	}
 	post, err := controller.postService.FindById(postId)
 	if err != nil {
-		context.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
+		context.JSON(http.StatusNotFound, utils.GetErrorResponse("Post not found"))
 		return
 	}
 	serializer := serializer.PostSerializer{Post: post}
-	context.JSON(http.StatusOK, serializer.Response())
+	context.JSON(http.StatusOK, utils.GetResponse(serializer.Response()))
 }
 
 // InsertPost             godoc
@@ -79,16 +80,16 @@ func (controller *postController) FindById(context *gin.Context) {
 func (controller *postController) Insert(context *gin.Context) {
 	form := dto.Post{}
 	if err := context.ShouldBind(&form); err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
+		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
 		return
 	}
 	if err := uploadPostImage(context, &form); err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
+		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
 		return
 	}
 	post := controller.postService.Insert(form)
 	serializer := serializer.PostSerializer{Post: post}
-	context.JSON(http.StatusCreated, serializer.Response())
+	context.JSON(http.StatusCreated, utils.GetResponse(serializer.Response()))
 }
 
 // UpdatePost             godoc
@@ -103,21 +104,21 @@ func (controller *postController) Insert(context *gin.Context) {
 func (controller *postController) Update(context *gin.Context) {
 	form := dto.Post{}
 	if err := context.ShouldBind(&form); err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
+		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
 		return
 	}
 	if err := uploadPostImage(context, &form); err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
+		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
 		return
 	}
 	postId, _ := strconv.ParseUint(context.Param("postId"), 10, 64)
 	post, err := controller.postService.Update(postId, form)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
 		return
 	}
 	serializer := serializer.PostSerializer{Post: post}
-	context.JSON(http.StatusOK, serializer.Response())
+	context.JSON(http.StatusOK, utils.GetResponse(serializer.Response()))
 }
 
 func uploadPostImage(context *gin.Context, form *dto.Post) error {
@@ -144,11 +145,11 @@ func (controller *postController) DeleteById(context *gin.Context) {
 	postId, _ := strconv.ParseUint(context.Param("postId"), 10, 64)
 	result := controller.postService.DeleteById(postId)
 	if result.Error != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": result.Error.Error()})
+		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(result.Error.Error()))
 		return
 	} else if result.RowsAffected < 1 {
-		context.JSON(http.StatusNotFound, gin.H{"error": "post does not exists"})
+		context.JSON(http.StatusNotFound, utils.GetErrorResponse("post does not exists"))
 		return
 	}
-	context.JSON(http.StatusNoContent, gin.H{})
+	context.JSON(http.StatusNoContent, utils.GetResponse(gin.H{}))
 }
