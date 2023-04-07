@@ -7,6 +7,7 @@ import (
 	"github.com/abdurraufraihan/golang-blog-api/internal/dto"
 	"github.com/abdurraufraihan/golang-blog-api/internal/serializer"
 	"github.com/abdurraufraihan/golang-blog-api/internal/service"
+	"github.com/abdurraufraihan/golang-blog-api/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -37,7 +38,7 @@ func NewCategoryController(
 func (controller *categoryController) All(context *gin.Context) {
 	categories := controller.categoryService.All()
 	serializer := serializer.CategoriesSerializer{Categories: categories}
-	context.JSON(http.StatusOK, serializer.Response())
+	context.JSON(http.StatusOK, utils.GetResponse(serializer.Response()))
 }
 
 // InsertCategory             godoc
@@ -52,12 +53,12 @@ func (controller *categoryController) Insert(context *gin.Context) {
 	categoryDto := dto.Category{}
 	err := context.ShouldBindJSON(&categoryDto)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
+		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
 		return
 	}
 	category := controller.categoryService.Insert(categoryDto)
 	serializer := serializer.CategorySerializer{Category: category}
-	context.JSON(http.StatusOK, serializer.Response())
+	context.JSON(http.StatusOK, utils.GetResponse(serializer.Response()))
 }
 
 // UpdateCategory             godoc
@@ -73,17 +74,17 @@ func (controller *categoryController) Update(context *gin.Context) {
 	categoryDto := dto.Category{}
 	err := context.ShouldBindJSON(&categoryDto)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
+		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
 		return
 	}
 	categoryId, _ := strconv.ParseUint(context.Param("categoryId"), 10, 64)
 	category, err := controller.categoryService.Update(categoryId, categoryDto)
 	if err != nil {
-		context.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		context.JSON(http.StatusNotFound, utils.GetErrorResponse(err.Error()))
 		return
 	}
 	serializer := serializer.CategorySerializer{Category: category}
-	context.JSON(http.StatusOK, serializer.Response())
+	context.JSON(http.StatusOK, utils.GetResponse(serializer.Response()))
 }
 
 // DeleteCategory             godoc
@@ -98,11 +99,11 @@ func (controller *categoryController) DeleteById(context *gin.Context) {
 	categoryId, _ := strconv.ParseUint(context.Param("categoryId"), 10, 64)
 	result := controller.categoryService.DeleteById(categoryId)
 	if result.Error != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": result.Error.Error()})
+		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(result.Error.Error()))
 		return
 	} else if result.RowsAffected < 1 {
-		context.JSON(http.StatusNotFound, gin.H{"error": "category does not exists"})
+		context.JSON(http.StatusNotFound, utils.GetErrorResponse("category does not exists"))
 		return
 	}
-	context.JSON(http.StatusNoContent, gin.H{})
+	context.JSON(http.StatusNoContent, utils.GetResponse(gin.H{}))
 }
