@@ -38,12 +38,12 @@ func (controller *commentController) All(context *gin.Context) {
 	offset := context.Query("offset")
 	postId, err := strconv.ParseUint(context.Param("postId"), 10, 32)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "postId param not found"})
+		context.JSON(http.StatusBadRequest, utils.GetErrorResponse("postId param not found"))
 		return
 	}
 	comments := controller.commentService.All(limit, offset, uint(postId))
 	serializer := serializer.CommentsSerializer{Comments: comments}
-	context.JSON(http.StatusOK, serializer.Response())
+	context.JSON(http.StatusOK, utils.GetResponse(serializer.Response()))
 }
 
 // InsertComment             godoc
@@ -59,21 +59,21 @@ func (controller *commentController) Insert(context *gin.Context) {
 	commentDto := dto.Comment{}
 	err := context.ShouldBindJSON(&commentDto)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
+		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
 		return
 	}
 	postId, err := strconv.ParseUint(context.Param("postId"), 10, 32)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "postId param not found"})
+		context.JSON(http.StatusBadRequest, utils.GetErrorResponse("postId param not found"))
 		return
 	}
 	tokenString := utils.GetTokenString(context)
 	userId, err := utils.GetUserIDFromToken(tokenString)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get userId from token"})
+		context.JSON(http.StatusBadRequest, utils.GetErrorResponse("Failed to get userId from token"))
 		return
 	}
 	comment := controller.commentService.Insert(commentDto, uint(postId), userId)
 	serializer := serializer.CommentSerializer{Comment: comment}
-	context.JSON(http.StatusCreated, serializer.Response())
+	context.JSON(http.StatusCreated, utils.GetResponse(serializer.Response()))
 }
