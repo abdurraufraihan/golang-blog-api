@@ -16,8 +16,8 @@ func NewLogger() *Logger {
 	return &Logger{logger: logger}
 }
 
-func (logger *Logger) Err(err error) *zerolog.Event {
-	return logger.logger.Err(err)
+func (logger *Logger) Error() *zerolog.Event {
+	return logger.logger.Error()
 }
 
 func (logger *Logger) Info() *zerolog.Event {
