@@ -43,7 +43,9 @@ func (controller *postController) All(context *gin.Context) {
 	postCount, posts := controller.postService.All(limit, offset)
 	serializer := serializer.PostsSerializer{Posts: posts}
 	context.JSON(
-		http.StatusOK, utils.GetResponse(gin.H{"totalPost": postCount, "posts": serializer.Response()}))
+		http.StatusOK,
+		utils.GetResponse(
+			gin.H{"totalPost": postCount, "posts": serializer.Response()}))
 }
 
 // GetPost             godoc
@@ -57,7 +59,8 @@ func (controller *postController) All(context *gin.Context) {
 func (controller *postController) FindById(context *gin.Context) {
 	postId, err := strconv.ParseUint(context.Param("postId"), 10, 64)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, utils.GetErrorResponse("No param id was found"))
+		context.JSON(
+			http.StatusBadRequest, utils.GetErrorResponse("No param id was found"))
 		return
 	}
 	post, err := controller.postService.FindById(postId)
@@ -145,10 +148,12 @@ func (controller *postController) DeleteById(context *gin.Context) {
 	postId, _ := strconv.ParseUint(context.Param("postId"), 10, 64)
 	result := controller.postService.DeleteById(postId)
 	if result.Error != nil {
-		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(result.Error.Error()))
+		context.JSON(
+			http.StatusBadRequest, utils.GetErrorResponse(result.Error.Error()))
 		return
 	} else if result.RowsAffected < 1 {
-		context.JSON(http.StatusNotFound, utils.GetErrorResponse("post does not exists"))
+		context.JSON(
+			http.StatusNotFound, utils.GetErrorResponse("post does not exists"))
 		return
 	}
 	context.JSON(http.StatusNoContent, utils.GetResponse(gin.H{}))

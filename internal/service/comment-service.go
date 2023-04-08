@@ -20,11 +20,15 @@ func NewCommentService(commentRepo repository.CommentRepo) *commentService {
 	return &commentService{commentRepo: commentRepo}
 }
 
-func (service *commentService) All(limit string, offset string, postId uint) []model.Comment {
+func (service *commentService) All(
+	limit string, offset string, postId uint,
+) []model.Comment {
 	return service.commentRepo.AllCommentByPostId(limit, offset, postId)
 }
 
-func (service *commentService) Insert(commentDto dto.Comment, postId, userId uint) model.Comment {
+func (service *commentService) Insert(
+	commentDto dto.Comment, postId, userId uint,
+) model.Comment {
 	commentModel := model.Comment{}
 	err := smapping.FillStruct(&commentModel, smapping.MapFields(&commentDto))
 	if err != nil {

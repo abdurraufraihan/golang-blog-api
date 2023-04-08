@@ -27,7 +27,9 @@ func (service *categoryService) All() []model.Category {
 	return service.categoryRepo.AllCategories()
 }
 
-func (service *categoryService) Insert(categoryDto dto.Category) model.Category {
+func (service *categoryService) Insert(
+	categoryDto dto.Category,
+) model.Category {
 	categoryModel := model.Category{}
 	err := smapping.FillStruct(&categoryModel, smapping.MapFields(&categoryDto))
 	if err != nil {

@@ -11,12 +11,16 @@ import (
 
 func CategoryRoute(db *gorm.DB, categoryRouter *gin.RouterGroup) {
 	var (
-		categoryRepository repository.CategoryRepo       = repository.NewCategoryRepo(db)
-		categoryService    service.CategoryService       = service.NewCategoryService(categoryRepository)
-		categoryController controller.CategoryController = controller.NewCategoryController(categoryService)
+		categoryRepository repository.CategoryRepo = repository.NewCategoryRepo(db)
+		categoryService    service.CategoryService = service.
+					NewCategoryService(categoryRepository)
+		categoryController controller.CategoryController = controller.
+					NewCategoryController(categoryService)
 	)
 	categoryRouter.GET("", categoryController.All)
 	categoryRouter.POST("", middleware.AuthorizeJWT(), categoryController.Insert)
-	categoryRouter.PUT("/:categoryId", middleware.AuthorizeJWT(), categoryController.Update)
-	categoryRouter.DELETE("/:categoryId", middleware.AuthorizeJWT(), categoryController.DeleteById)
+	categoryRouter.PUT(
+		"/:categoryId", middleware.AuthorizeJWT(), categoryController.Update)
+	categoryRouter.DELETE(
+		"/:categoryId", middleware.AuthorizeJWT(), categoryController.DeleteById)
 }

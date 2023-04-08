@@ -26,7 +26,9 @@ func NewPostService(postRepo repository.PostRepo) *postService {
 	}
 }
 
-func (service *postService) All(limit string, offset string) (int64, []model.Post) {
+func (service *postService) All(
+	limit string, offset string,
+) (int64, []model.Post) {
 	return service.postRepo.PostCount(), service.postRepo.AllPost(limit, offset)
 }
 
@@ -54,7 +56,8 @@ func (service *postService) Update(
 	if postDto.Image == "" {
 		postDto.Image = post.Image
 	}
-	if fillErr := smapping.FillStruct(&post, smapping.MapFields(&postDto)); fillErr != nil {
+	if fillErr := smapping.FillStruct(
+		&post, smapping.MapFields(&postDto)); fillErr != nil {
 		panic(fillErr)
 	}
 	if result := service.postRepo.Save(&post); result.Error != nil {

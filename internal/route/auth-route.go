@@ -10,10 +10,12 @@ import (
 
 func AuthRoute(db *gorm.DB, authRouter *gin.RouterGroup) {
 	var (
-		jwtService     service.JwtService        = service.NewJwtService()
-		authRepository repository.AuthRepo       = repository.NewAuthRepo(db)
-		authService    service.AuthService       = service.NewAuthService(authRepository)
-		authController controller.AuthController = controller.NewAuthController(authService, jwtService)
+		jwtService     service.JwtService  = service.NewJwtService()
+		authRepository repository.AuthRepo = repository.NewAuthRepo(db)
+		authService    service.AuthService = service.
+				NewAuthService(authRepository)
+		authController controller.AuthController = controller.
+				NewAuthController(authService, jwtService)
 	)
 	authRouter.POST("/login", authController.Login)
 	authRouter.POST("/signup", authController.Register)

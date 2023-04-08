@@ -23,7 +23,9 @@ type jwtService struct {
 }
 
 func NewJwtService() *jwtService {
-	return &jwtService{issuer: os.Getenv("TOKEN_ISSUER"), secretKey: utils.GetSecretKey()}
+	return &jwtService{
+		issuer: os.Getenv("TOKEN_ISSUER"), secretKey: utils.GetSecretKey(),
+	}
 }
 
 func (service *jwtService) getTokenClaims(
@@ -39,7 +41,9 @@ func (service *jwtService) getTokenClaims(
 	}
 }
 
-func (service *jwtService) GenerateTokenPair(userId interface{}) map[string]string {
+func (service *jwtService) GenerateTokenPair(
+	userId interface{},
+) map[string]string {
 	tokenClaims := service.getTokenClaims(userId, 15)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenClaims)
 	tokenString, err := token.SignedString([]byte(service.secretKey))
@@ -52,5 +56,7 @@ func (service *jwtService) GenerateTokenPair(userId interface{}) map[string]stri
 	if err != nil {
 		panic(err)
 	}
-	return map[string]string{"access_token": tokenString, "refresh_token": refreshTokenString}
+	return map[string]string{
+		"access_token": tokenString, "refresh_token": refreshTokenString,
+	}
 }

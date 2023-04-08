@@ -43,13 +43,15 @@ func (controller *authController) Login(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
 		return
 	}
-	isValidCredential, userId := controller.authService.VerifyCredential(loginDto.Email, loginDto.Password)
+	isValidCredential, userId := controller.authService.VerifyCredential(
+		loginDto.Email, loginDto.Password)
 	if isValidCredential {
 		tokenPair := controller.jwtService.GenerateTokenPair(userId)
 		context.JSON(http.StatusOK, utils.GetResponse(tokenPair))
 		return
 	}
-	context.JSON(http.StatusBadRequest, utils.GetErrorResponse("invalid credential"))
+	context.JSON(
+		http.StatusBadRequest, utils.GetErrorResponse("invalid credential"))
 }
 
 // Register             godoc
@@ -69,7 +71,8 @@ func (controller *authController) Register(context *gin.Context) {
 	}
 	result, user := controller.authService.Register(userDto)
 	if result.Error != nil {
-		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(result.Error.Error()))
+		context.JSON(
+			http.StatusBadRequest, utils.GetErrorResponse(result.Error.Error()))
 		return
 	}
 	context.JSON(http.StatusOK, utils.GetResponse(user))
@@ -91,7 +94,8 @@ func (controller *authController) VerifyToken(context *gin.Context) {
 	}
 	token, _ := utils.ValidateToken(tokenDto.Token)
 	if token == nil || !token.Valid {
-		context.AbortWithStatusJSON(http.StatusBadRequest, utils.GetErrorResponse("Invalid Token"))
+		context.AbortWithStatusJSON(
+			http.StatusBadRequest, utils.GetErrorResponse("Invalid Token"))
 		return
 	}
 	context.JSON(http.StatusOK, utils.GetResponse(gin.H{"is_valid": true}))
@@ -113,12 +117,15 @@ func (controller *authController) RefreshToken(context *gin.Context) {
 	}
 	token, err := utils.ValidateToken(tokenDto.Token)
 	if token == nil || !token.Valid {
-		context.AbortWithStatusJSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
+		context.AbortWithStatusJSON(
+			http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
 		return
 	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-		context.JSON(http.StatusOK, controller.jwtService.GenerateTokenPair(claims["user_id"]))
+		context.JSON(
+			http.StatusOK, controller.jwtService.GenerateTokenPair(claims["user_id"]))
 	} else {
-		context.AbortWithStatusJSON(http.StatusBadRequest, utils.GetErrorResponse("Can not able to claim token"))
+		context.AbortWithStatusJSON(
+			http.StatusBadRequest, utils.GetErrorResponse("Failed to claim token"))
 	}
 }

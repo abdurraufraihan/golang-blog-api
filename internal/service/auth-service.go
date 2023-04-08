@@ -31,7 +31,9 @@ func (service *authService) Register(userDto dto.User) (*gorm.DB, model.User) {
 	return service.authRepo.Register(userModel)
 }
 
-func (service *authService) VerifyCredential(email string, passsword string) (bool, uint64) {
+func (service *authService) VerifyCredential(
+	email string, passsword string,
+) (bool, uint64) {
 	result, user := service.authRepo.FindByEmail(email)
 	if result.Error == nil && user.ID != 0 {
 		return comparePassword([]byte(user.Password), []byte(passsword)), user.ID

@@ -20,7 +20,9 @@ type commentController struct {
 	commentService service.CommentService
 }
 
-func NewCommentController(commentService service.CommentService) *commentController {
+func NewCommentController(
+	commentService service.CommentService,
+) *commentController {
 	return &commentController{
 		commentService: commentService,
 	}
@@ -38,7 +40,8 @@ func (controller *commentController) All(context *gin.Context) {
 	offset := context.Query("offset")
 	postId, err := strconv.ParseUint(context.Param("postId"), 10, 32)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, utils.GetErrorResponse("postId param not found"))
+		context.JSON(
+			http.StatusBadRequest, utils.GetErrorResponse("postId param not found"))
 		return
 	}
 	comments := controller.commentService.All(limit, offset, uint(postId))
@@ -64,13 +67,16 @@ func (controller *commentController) Insert(context *gin.Context) {
 	}
 	postId, err := strconv.ParseUint(context.Param("postId"), 10, 32)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, utils.GetErrorResponse("postId param not found"))
+		context.JSON(
+			http.StatusBadRequest, utils.GetErrorResponse("postId param not found"))
 		return
 	}
 	tokenString := utils.GetTokenString(context)
 	userId, err := utils.GetUserIDFromToken(tokenString)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, utils.GetErrorResponse("Failed to get userId from token"))
+		context.JSON(
+			http.StatusBadRequest,
+			utils.GetErrorResponse("Failed to get userId from token"))
 		return
 	}
 	comment := controller.commentService.Insert(commentDto, uint(postId), userId)

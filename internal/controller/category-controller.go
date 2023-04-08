@@ -99,10 +99,12 @@ func (controller *categoryController) DeleteById(context *gin.Context) {
 	categoryId, _ := strconv.ParseUint(context.Param("categoryId"), 10, 64)
 	result := controller.categoryService.DeleteById(categoryId)
 	if result.Error != nil {
-		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(result.Error.Error()))
+		context.JSON(
+			http.StatusBadRequest, utils.GetErrorResponse(result.Error.Error()))
 		return
 	} else if result.RowsAffected < 1 {
-		context.JSON(http.StatusNotFound, utils.GetErrorResponse("category does not exists"))
+		context.JSON(
+			http.StatusNotFound, utils.GetErrorResponse("category does not exists"))
 		return
 	}
 	context.JSON(http.StatusNoContent, utils.GetResponse(gin.H{}))
