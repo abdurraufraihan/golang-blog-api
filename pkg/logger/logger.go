@@ -32,6 +32,10 @@ func (logger *Logger) Warn() *zerolog.Event {
 	return logger.logger.Warn()
 }
 
+func (logger *Logger) Trace() *zerolog.Event {
+	return logger.logger.Trace()
+}
+
 func (logger *Logger) Fatal() *zerolog.Event {
 	return logger.logger.Fatal()
 }

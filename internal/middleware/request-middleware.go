@@ -19,8 +19,10 @@ func RequestLogger(logger *zerolog.Logger) gin.HandlerFunc {
 		ctx.Next()
 
 		var logEvent *zerolog.Event
-		if ctx.Writer.Status() >= 400 {
+		if ctx.Writer.Status() >= 500 {
 			logEvent = logger.Error()
+		} else if ctx.Writer.Status() >= 400 {
+			logEvent = logger.Warn()
 		} else {
 			logEvent = logger.Info()
 		}
