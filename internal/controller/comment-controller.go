@@ -8,6 +8,7 @@ import (
 	"github.com/abdurraufraihan/golang-blog-api/internal/serializer"
 	"github.com/abdurraufraihan/golang-blog-api/internal/service"
 	"github.com/abdurraufraihan/golang-blog-api/internal/utils"
+	"github.com/abdurraufraihan/golang-blog-api/pkg/logger"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,13 +19,15 @@ type CommentController interface {
 
 type commentController struct {
 	commentService service.CommentService
+	logger         *logger.Logger
 }
 
 func NewCommentController(
-	commentService service.CommentService,
+	commentService service.CommentService, logger *logger.Logger,
 ) *commentController {
 	return &commentController{
 		commentService: commentService,
+		logger:         logger,
 	}
 }
 
@@ -63,12 +66,14 @@ func (controller *commentController) Insert(context *gin.Context) {
 	err := context.ShouldBindJSON(&commentDto)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
+		controller.logger.Error().Err(err).Msg("")
 		return
 	}
 	postId, err := strconv.ParseUint(context.Param("postId"), 10, 32)
 	if err != nil {
 		context.JSON(
 			http.StatusBadRequest, utils.GetErrorResponse("postId param not found"))
+		controller.logger.Error().Msg("postId param not found")
 		return
 	}
 	tokenString := utils.GetTokenString(context)
@@ -77,6 +82,7 @@ func (controller *commentController) Insert(context *gin.Context) {
 		context.JSON(
 			http.StatusBadRequest,
 			utils.GetErrorResponse("Failed to get userId from token"))
+		controller.logger.Error().Msg("Failed to get userId from token")
 		return
 	}
 	comment := controller.commentService.Insert(commentDto, uint(postId), userId)

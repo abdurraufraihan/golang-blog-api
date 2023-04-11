@@ -6,6 +6,7 @@ import (
 	"github.com/abdurraufraihan/golang-blog-api/adapter"
 	"github.com/abdurraufraihan/golang-blog-api/docs"
 	"github.com/abdurraufraihan/golang-blog-api/internal/route"
+	"github.com/abdurraufraihan/golang-blog-api/pkg/logger"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -30,8 +31,9 @@ var db *gorm.DB = adapter.ConnectWithDB()
 
 func main() {
 	defer adapter.CloseDbConnection(db)
+	logger := logger.NewLogger()
 	router := gin.Default()
-	route.RootRoute(db, router)
+	route.RootRoute(db, router, logger)
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":" + os.Getenv("APP_PORT"))
