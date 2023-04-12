@@ -6,6 +6,7 @@ import (
 	"github.com/abdurraufraihan/golang-blog-api/internal/dto"
 	"github.com/abdurraufraihan/golang-blog-api/internal/service"
 	"github.com/abdurraufraihan/golang-blog-api/internal/utils"
+	"github.com/abdurraufraihan/golang-blog-api/pkg/logger"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
@@ -20,12 +21,17 @@ type AuthController interface {
 type authController struct {
 	authService service.AuthService
 	jwtService  service.JwtService
+	logger      *logger.Logger
 }
 
 func NewAuthController(
-	authService service.AuthService, jwtService service.JwtService,
+	authService service.AuthService,
+	jwtService service.JwtService,
+	logger *logger.Logger,
 ) *authController {
-	return &authController{authService: authService, jwtService: jwtService}
+	return &authController{
+		authService: authService, jwtService: jwtService, logger: logger,
+	}
 }
 
 // Login             godoc
@@ -41,6 +47,7 @@ func (controller *authController) Login(context *gin.Context) {
 	err := context.ShouldBindJSON(&loginDto)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
+		controller.logger.Error().Err(err).Msg("")
 		return
 	}
 	isValidCredential, userId := controller.authService.VerifyCredential(
@@ -52,6 +59,7 @@ func (controller *authController) Login(context *gin.Context) {
 	}
 	context.JSON(
 		http.StatusBadRequest, utils.GetErrorResponse("invalid credential"))
+	controller.logger.Error().Msg("invalid credential")
 }
 
 // Register             godoc
@@ -67,12 +75,14 @@ func (controller *authController) Register(context *gin.Context) {
 	err := context.ShouldBindJSON(&userDto)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
+		controller.logger.Error().Err(err).Msg("")
 		return
 	}
 	result, user := controller.authService.Register(userDto)
 	if result.Error != nil {
 		context.JSON(
 			http.StatusBadRequest, utils.GetErrorResponse(result.Error.Error()))
+		controller.logger.Error().Err(err).Msg("")
 		return
 	}
 	context.JSON(http.StatusOK, utils.GetResponse(user))
@@ -90,12 +100,14 @@ func (controller *authController) VerifyToken(context *gin.Context) {
 	tokenDto := dto.Token{}
 	if err := context.ShouldBindJSON(&tokenDto); err != nil {
 		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
+		controller.logger.Error().Err(err).Msg("")
 		return
 	}
 	token, _ := utils.ValidateToken(tokenDto.Token)
 	if token == nil || !token.Valid {
 		context.AbortWithStatusJSON(
 			http.StatusBadRequest, utils.GetErrorResponse("Invalid Token"))
+		controller.logger.Error().Msg("Invalid Token")
 		return
 	}
 	context.JSON(http.StatusOK, utils.GetResponse(gin.H{"is_valid": true}))
@@ -113,12 +125,14 @@ func (controller *authController) RefreshToken(context *gin.Context) {
 	tokenDto := dto.Token{}
 	if err := context.ShouldBindJSON(&tokenDto); err != nil {
 		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
+		controller.logger.Error().Err(err).Msg("")
 		return
 	}
 	token, err := utils.ValidateToken(tokenDto.Token)
 	if token == nil || !token.Valid {
 		context.AbortWithStatusJSON(
 			http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
+		controller.logger.Error().Err(err).Msg("")
 		return
 	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
@@ -127,5 +141,6 @@ func (controller *authController) RefreshToken(context *gin.Context) {
 	} else {
 		context.AbortWithStatusJSON(
 			http.StatusBadRequest, utils.GetErrorResponse("Failed to claim token"))
+		controller.logger.Error().Msg("Failed to claim token")
 	}
 }

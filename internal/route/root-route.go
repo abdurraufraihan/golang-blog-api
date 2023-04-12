@@ -16,5 +16,5 @@ func RootRoute(db *gorm.DB, router *gin.Engine, logger *logger.Logger) {
 	categoryRouter := apiRouter.Group("/categories")
 	CategoryRoute(db, categoryRouter)
 	authRouter := apiRouter.Group("/auth")
-	AuthRoute(db, authRouter)
+	AuthRoute(db, authRouter, logger)
 }
