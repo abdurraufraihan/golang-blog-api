@@ -10,7 +10,7 @@ func RootRoute(db *gorm.DB, router *gin.Engine, logger *logger.Logger) {
 	router.Static("/media", "/media")
 	apiRouter := router.Group("/api/v1")
 	postRouter := apiRouter.Group("/posts")
-	PostRoute(db, postRouter)
+	PostRoute(db, postRouter, logger)
 	commentRouter := apiRouter.Group("/posts/:postId/comments")
 	CommentRoute(db, commentRouter, logger)
 	categoryRouter := apiRouter.Group("/categories")

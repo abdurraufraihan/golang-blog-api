@@ -5,17 +5,18 @@ import (
 	"github.com/abdurraufraihan/golang-blog-api/internal/middleware"
 	"github.com/abdurraufraihan/golang-blog-api/internal/repository"
 	"github.com/abdurraufraihan/golang-blog-api/internal/service"
+	"github.com/abdurraufraihan/golang-blog-api/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-func PostRoute(db *gorm.DB, postRouter *gin.RouterGroup) {
+func PostRoute(db *gorm.DB, postRouter *gin.RouterGroup, logger *logger.Logger) {
 	var (
 		postRepository repository.PostRepo = repository.NewPostRepo(db)
 		postService    service.PostService = service.
 				NewPostService(postRepository)
 		postController controller.PostController = controller.
-				NewPostController(postService)
+				NewPostController(postService, logger)
 	)
 	postRouter.GET("", postController.All)
 	postRouter.GET("/:postId", postController.FindById)

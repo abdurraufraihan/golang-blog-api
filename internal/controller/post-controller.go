@@ -9,6 +9,7 @@ import (
 	"github.com/abdurraufraihan/golang-blog-api/internal/serializer"
 	"github.com/abdurraufraihan/golang-blog-api/internal/service"
 	"github.com/abdurraufraihan/golang-blog-api/internal/utils"
+	"github.com/abdurraufraihan/golang-blog-api/pkg/logger"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,12 +23,13 @@ type PostController interface {
 
 type postController struct {
 	postService service.PostService
+	logger      *logger.Logger
 }
 
-func NewPostController(postService service.PostService) *postController {
-	return &postController{
-		postService: postService,
-	}
+func NewPostController(
+	postService service.PostService, logger *logger.Logger,
+) *postController {
+	return &postController{postService: postService, logger: logger}
 }
 
 // GetPosts             godoc
@@ -61,11 +63,13 @@ func (controller *postController) FindById(context *gin.Context) {
 	if err != nil {
 		context.JSON(
 			http.StatusBadRequest, utils.GetErrorResponse("No param id was found"))
+		controller.logger.Error().Err(err).Msg("No param id was found")
 		return
 	}
 	post, err := controller.postService.FindById(postId)
 	if err != nil {
 		context.JSON(http.StatusNotFound, utils.GetErrorResponse("Post not found"))
+		controller.logger.Error().Err(err).Msg("Post not found")
 		return
 	}
 	serializer := serializer.PostSerializer{Post: post}
@@ -84,10 +88,12 @@ func (controller *postController) Insert(context *gin.Context) {
 	form := dto.Post{}
 	if err := context.ShouldBind(&form); err != nil {
 		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
+		controller.logger.Error().Err(err).Msg("")
 		return
 	}
 	if err := uploadPostImage(context, &form); err != nil {
 		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
+		controller.logger.Error().Err(err).Msg("")
 		return
 	}
 	post := controller.postService.Insert(form)
@@ -108,16 +114,19 @@ func (controller *postController) Update(context *gin.Context) {
 	form := dto.Post{}
 	if err := context.ShouldBind(&form); err != nil {
 		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
+		controller.logger.Error().Err(err).Msg("")
 		return
 	}
 	if err := uploadPostImage(context, &form); err != nil {
 		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
+		controller.logger.Error().Err(err).Msg("")
 		return
 	}
 	postId, _ := strconv.ParseUint(context.Param("postId"), 10, 64)
 	post, err := controller.postService.Update(postId, form)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
+		controller.logger.Error().Err(err).Msg("")
 		return
 	}
 	serializer := serializer.PostSerializer{Post: post}
@@ -150,10 +159,12 @@ func (controller *postController) DeleteById(context *gin.Context) {
 	if result.Error != nil {
 		context.JSON(
 			http.StatusBadRequest, utils.GetErrorResponse(result.Error.Error()))
+		controller.logger.Error().Err(result.Error).Msg("")
 		return
 	} else if result.RowsAffected < 1 {
 		context.JSON(
 			http.StatusNotFound, utils.GetErrorResponse("post does not exists"))
+		controller.logger.Error().Msg("post does not exists")
 		return
 	}
 	context.JSON(http.StatusNoContent, utils.GetResponse(gin.H{}))
