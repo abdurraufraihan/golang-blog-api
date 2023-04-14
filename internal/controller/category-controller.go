@@ -8,6 +8,7 @@ import (
 	"github.com/abdurraufraihan/golang-blog-api/internal/serializer"
 	"github.com/abdurraufraihan/golang-blog-api/internal/service"
 	"github.com/abdurraufraihan/golang-blog-api/internal/utils"
+	"github.com/abdurraufraihan/golang-blog-api/pkg/logger"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,12 +21,13 @@ type CategoryController interface {
 
 type categoryController struct {
 	categoryService service.CategoryService
+	logger          *logger.Logger
 }
 
 func NewCategoryController(
-	categoryService service.CategoryService,
+	categoryService service.CategoryService, logger *logger.Logger,
 ) *categoryController {
-	return &categoryController{categoryService: categoryService}
+	return &categoryController{categoryService: categoryService, logger: logger}
 }
 
 // GetCategories             godoc
@@ -54,6 +56,7 @@ func (controller *categoryController) Insert(context *gin.Context) {
 	err := context.ShouldBindJSON(&categoryDto)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
+		controller.logger.Error().Err(err).Msg("")
 		return
 	}
 	category := controller.categoryService.Insert(categoryDto)
@@ -75,12 +78,14 @@ func (controller *categoryController) Update(context *gin.Context) {
 	err := context.ShouldBindJSON(&categoryDto)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, utils.GetErrorResponse(err.Error()))
+		controller.logger.Error().Err(err).Msg("")
 		return
 	}
 	categoryId, _ := strconv.ParseUint(context.Param("categoryId"), 10, 64)
 	category, err := controller.categoryService.Update(categoryId, categoryDto)
 	if err != nil {
 		context.JSON(http.StatusNotFound, utils.GetErrorResponse(err.Error()))
+		controller.logger.Error().Err(err).Msg("")
 		return
 	}
 	serializer := serializer.CategorySerializer{Category: category}
@@ -101,10 +106,12 @@ func (controller *categoryController) DeleteById(context *gin.Context) {
 	if result.Error != nil {
 		context.JSON(
 			http.StatusBadRequest, utils.GetErrorResponse(result.Error.Error()))
+		controller.logger.Error().Err(result.Error).Msg("")
 		return
 	} else if result.RowsAffected < 1 {
 		context.JSON(
 			http.StatusNotFound, utils.GetErrorResponse("category does not exists"))
+		controller.logger.Error().Msg("category does not exists")
 		return
 	}
 	context.JSON(http.StatusNoContent, utils.GetResponse(gin.H{}))
